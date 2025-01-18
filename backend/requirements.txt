@@ -10,3 +10,4 @@ opencv-python>=4.8.1.78
 torch>=2.1.0
 assemblyai>=0.17.0
 python-dotenv>=1.0.0
+mediapipe>=0.10.9
