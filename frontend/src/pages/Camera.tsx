@@ -1,16 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Camera, Mic, Settings, Volume2, MonitorStop, AlertCircle } from 'lucide-react';
+import { Mic, Settings, Volume2 } from 'lucide-react';
 import './Camera.css';
 
 const CameraPage = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [time, setTime] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     async function getMedia() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        streamRef.current = stream;
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
@@ -20,19 +24,51 @@ const CameraPage = () => {
     }
 
     getMedia();
+
+    return () => {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
   }, []);
+
+  const handleRecording = () => {
+    if (isRecording) {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+      console.log(`Interview ended at ${time} seconds`);
+    } else {
+      setTime(0);
+      timerRef.current = setInterval(() => {
+        setTime(prevTime => prevTime + 1);
+      }, 1000);
+    }
+    setIsRecording(!isRecording);
+  };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  };
 
   return (
     <div className="page-container">
       {/* Top Bar */}
       <div className="top-bar">
         <div className="top-bar-content">
-          <span className="title">Technical Interview Practice</span>
+          <span className="title">Intreview</span>
           <div className="top-bar-actions">
-            <div className="recording-indicator">
-              <div className="indicator-dot"></div>
-              <span>25:31</span>
-            </div>
+            {isRecording && (
+              <div className="recording-indicator">
+                <div className="indicator-dot"></div>
+                <span>{formatTime(time)}</span>
+              </div>
+            )}
             <button>
               <Settings className="icon" />
             </button>
@@ -49,12 +85,6 @@ const CameraPage = () => {
           </div>
           <div className="video-controls">
             <button
-              className={`control-button ${isRecording ? 'recording' : 'ready'}`}
-              onClick={() => setIsRecording(!isRecording)}
-            >
-              {isRecording ? <MonitorStop className="icon" /> : <Camera className="icon" />}
-            </button>
-            <button
               className={`control-button ${isMuted ? 'muted' : ''}`}
               onClick={() => setIsMuted(!isMuted)}
             >
@@ -64,7 +94,12 @@ const CameraPage = () => {
               <Volume2 className="icon" />
             </button>
           </div>
-          <button className="end-session-button">End Session</button>
+          <button
+            className={`end-session-button ${isRecording ? 'end' : 'start'}`}
+            onClick={handleRecording}
+          >
+            {isRecording ? 'End Session' : 'Start Interview'}
+          </button>
         </div>
 
         {/* Feedback Panel */}
@@ -100,7 +135,7 @@ const CameraPage = () => {
             </div>
           </div>
 
-          <h3>Live Suggestions</h3>
+          {/* <h3>Live Suggestions</h3>
           <div className="suggestions">
             <div className="suggestion">
               <AlertCircle className="icon alert" />
@@ -110,10 +145,10 @@ const CameraPage = () => {
               <AlertCircle className="icon success" />
               <p>Good use of hand gestures to emphasize key points.</p>
             </div>
-          </div>
+          </div> */}
 
           <div className="current-question">
-            <h3>Current Question</h3>
+            <h2>Current Question</h2>
             <p>
               Can you explain a challenging technical problem you've solved and walk me through your problem-solving approach?
             </p>

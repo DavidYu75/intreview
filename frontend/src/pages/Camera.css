@@ -14,6 +14,13 @@
     align-items: center;
   }
   
+  .top-bar-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+  
   .title {
     font-size: 1.25rem;
     font-weight: 600;
@@ -23,6 +30,7 @@
     display: flex;
     align-items: center;
     gap: 1rem;
+    margin-left: auto;
   }
   
   .recording-indicator {
@@ -43,6 +51,7 @@
     width: 1.7rem;
     height: 1.7rem;
   }
+  
   
   /* Main Content */
   .main-content {
@@ -112,7 +121,6 @@
     position: absolute;
     bottom: 1rem;
     right: 1rem;
-    background-color: #e53e3e;
     margin: 1rem;
     padding: 0.5rem 1rem;
     border-radius: 0.25rem;
@@ -122,6 +130,22 @@
   }
   
   .end-session-button:hover {
+    background-color: #c53030;
+  }
+  
+  .end-session-button.start {
+    background-color: #4a5568;
+  }
+  
+  .end-session-button.start:hover {
+    background-color: #718096;
+  }
+  
+  .end-session-button.end {
+    background-color: #e53e3e;
+  }
+  
+  .end-session-button.end:hover {
     background-color: #c53030;
   }
   
@@ -135,12 +159,14 @@
   }
   
   .feedback-metrics .metric {
-    margin-bottom: 1rem;
+    margin-bottom: 4rem;
   }
   
   .metric-label {
     display: flex;
     justify-content: space-between;
+    font-size: 1.2rem;
+    padding-bottom: 0.3rem;
   }
   
   .progress-bar {
@@ -155,26 +181,27 @@
     border-radius: 0.25rem;
   }
   
-  .suggestions {
+  /* .suggestions {
     margin-top: 1rem;
   }
-  
-  .suggestion {
+   */
+  /* .suggestion {
     display: flex;
     align-items: start;
     gap: 0.5rem;
-  }
+  } */
   
-  .icon.alert {
+  /* .icon.alert {
     color: #ecc94b;
   }
   
   .icon.success {
     color: #48bb78;
-  }
+  } */
   
   .current-question {
-    margin-top: auto;
+    
+    margin-top: 1rem;
     padding-top: 1rem;
     border-top: 1px solid #4a5568;
   }
