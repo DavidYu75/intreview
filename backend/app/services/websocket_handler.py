@@ -2,8 +2,13 @@ from fastapi import WebSocket, WebSocketDisconnect
 from typing import Dict, List
 import json
 import asyncio
-from services.video_processor import VideoProcessor
-from services.speech_analyzer import SpeechAnalyzer
+import sys
+import os
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from app.services.video_processor import VideoProcessor
+from app.services.speech_analyzer import SpeechAnalyzer
 import base64
 import numpy as np
 import cv2
@@ -29,16 +34,33 @@ class InterviewSessionManager:
             nparr = np.frombuffer(base64.b64decode(encoded_data), np.uint8)
             frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
             
-            # Process frame using existing video processor
+            # Process frame using video processor
+            processed_frame, metrics = await self.video_processor.process_frame(frame)
+            
+            # Get real-time feedback
             feedback = await self.video_processor.get_realtime_feedback(frame)
+            
+            # Enhance feedback with more details
+            # feedback.update({
+            #     "frame_shape": frame.shape if frame is not None else None,
+            #     "face_position": metrics.get("face_position"),
+            #     "processing_successful": True,
+            #     "metrics": metrics
+            # })
+            
             return feedback
             
         except Exception as e:
-            return {"error": str(e)}
+            return {
+                "error": str(e),
+                "processing_successful": False,
+                "face_detected": False,
+                "attention_status": "error"
+            }
             
     async def process_audio(self, audio_data: bytes, session_id: str):
         try:
-            # Process audio chunk using existing speech analyzer
+            # Process audio chunk using speech analyzer
             feedback = await self.speech_analyzer.get_realtime_feedback(audio_data)
             return feedback
             
@@ -86,3 +108,5 @@ async def handle_websocket(websocket: WebSocket, session_id: str):
             "type": "error",
             "message": str(e)
         })
+        session_manager.disconnect(session_id)
+

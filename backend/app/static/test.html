@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Intreview WebSocket Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #videoFeed { background: #ddd; width: 640px; height: 480px; }
+        #log { height: 200px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; margin-top: 20px; }
+        button { margin: 10px 0; padding: 8px 16px; }
+        .status { margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Intreview WebSocket Test</h1>
+    
+    <div>
+        <button onclick="startSession()">1. Start Session</button>
+        <button onclick="connectWebSocket()">2. Connect WebSocket</button>
+        <button onclick="startCamera()">3. Start Camera</button>
+        <button onclick="stopCamera()">Stop Camera</button>
+    </div>
+
+    <video id="videoFeed" autoplay playsinline></video>
+    <canvas id="canvas" style="display:none;"></canvas>
+
+    <div class="status">Session ID: <span id="sessionId">None</span></div>
+    <div class="status">WebSocket Status: <span id="wsStatus">Disconnected</span></div>
+    
+    <div id="log"></div>
+
+    <script>
+        let sessionId = null;
+        let ws = null;
+        let videoStream = null;
+        let isStreaming = false;
+
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            logDiv.innerHTML += message + '<br>';
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        async function startSession() {
+            try {
+                const response = await fetch('http://localhost:8000/api/sessions/start', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                sessionId = data.session_id;
+                document.getElementById('sessionId').textContent = sessionId;
+                log('Session started: ' + sessionId);
+            } catch (error) {
+                log('Error starting session: ' + error);
+            }
+        }
+
+        function connectWebSocket() {
+            if (!sessionId) {
+                log('Please start a session first');
+                return;
+            }
+
+            if (ws) {
+                ws.close();
+            }
+
+            try {
+                ws = new WebSocket(`ws://localhost:8000/api/ws/${sessionId}`);
+                
+                ws.onopen = () => {
+                    document.getElementById('wsStatus').textContent = 'Connected';
+                    log('WebSocket connected');
+                };
+                
+                ws.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    log('Received: ' + JSON.stringify(data, null, 2));
+                };
+                
+                ws.onerror = (error) => {
+                    log('WebSocket error: ' + error);
+                    console.error('WebSocket error:', error);
+                };
+                
+                ws.onclose = () => {
+                    document.getElementById('wsStatus').textContent = 'Disconnected';
+                    log('WebSocket disconnected');
+                };
+            } catch (error) {
+                log('Error connecting WebSocket: ' + error);
+                console.error('WebSocket connection error:', error);
+            }
+        }
+
+        async function startCamera() {
+            try {
+                videoStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { width: 640, height: 480 },
+                    audio: true 
+                });
+                const videoElement = document.getElementById('videoFeed');
+                videoElement.srcObject = videoStream;
+                isStreaming = true;
+                log('Camera started');
+                sendVideoFrames();
+            } catch (error) {
+                log('Error accessing camera: ' + error);
+                console.error('Camera error:', error);
+            }
+        }
+
+        function stopCamera() {
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+                document.getElementById('videoFeed').srcObject = null;
+                isStreaming = false;
+                log('Camera stopped');
+            }
+        }
+
+        function sendVideoFrames() {
+            if (!isStreaming || !ws || ws.readyState !== WebSocket.OPEN) return;
+
+            const video = document.getElementById('videoFeed');
+            const canvas = document.getElementById('canvas');
+            const context = canvas.getContext('2d');
+
+            canvas.width = 640;
+            canvas.height = 480;
+
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const frame = canvas.toDataURL('image/jpeg', 0.8);
+
+            try {
+                ws.send(JSON.stringify({
+                    type: 'video',
+                    frame: frame.split(',')[1]
+                }));
+            } catch (error) {
+                log('Error sending frame: ' + error);
+                console.error('Frame sending error:', error);
+            }
+
+            setTimeout(sendVideoFrames, 100); // Send frame every 100ms
+        }
+    </script>
+</body>
+</html>

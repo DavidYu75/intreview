@@ -1,7 +1,13 @@
-from fastapi import APIRouter, WebSocket, HTTPException, Depends
-from typing import Dict, List
+import sys
+import os
+from fastapi import APIRouter, WebSocket, HTTPException
+from typing import Dict
 import uuid
 from datetime import datetime
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from app.services.websocket_handler import handle_websocket
 
 router = APIRouter()
 
@@ -19,6 +25,15 @@ async def start_session():
     }
     active_sessions[session_id] = session_data
     return {"session_id": session_id}
+
+@router.websocket("/ws/{session_id}")
+async def websocket_endpoint(websocket: WebSocket, session_id: str):
+    """WebSocket endpoint for real-time interview processing"""
+    if session_id not in active_sessions:
+        await websocket.close(code=4004, reason="Invalid session ID")
+        return
+        
+    await handle_websocket(websocket, session_id)
 
 @router.get("/sessions/{session_id}")
 async def get_session(session_id: str):
@@ -38,17 +53,3 @@ async def end_session(session_id: str):
     session["status"] = "completed"
     
     return {"message": "Session ended successfully"}
-
-@router.get("/sessions/history")
-async def get_session_history():
-    """Get history of all sessions"""
-    return list(active_sessions.values())
-
-@router.websocket("/ws/{session_id}")
-async def websocket_endpoint(websocket: WebSocket, session_id: str):
-    """WebSocket endpoint for real-time interview processing"""
-    if session_id not in active_sessions:
-        await websocket.close(code=4004, reason="Invalid session ID")
-        return
-        
-    await handle_websocket(websocket, session_id)
