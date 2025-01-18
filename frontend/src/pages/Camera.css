@@ -81,7 +81,8 @@
 }
 
 .main-header {
-  @apply text-2xl font-bold text-gray-800 mb-2;
+  @apply text-3xl font-bold text-gray-800 mb-2;
+  font-family: 'Evoria', system-ui, sans-serif;
 }
 
 .header-divider {
@@ -89,7 +90,8 @@
 }
 
 .panel-header {
-  @apply text-lg font-medium text-gray-800 mb-4;
+  @apply text-xl font-medium text-gray-800 mb-4;
+  font-family: 'Evoria', system-ui, sans-serif;
 }
 
 .panel-section {

@@ -12,7 +12,8 @@
 }
 
 .title {
-  @apply text-xl font-bold text-gray-900;
+  @apply text-2xl font-bold text-gray-900;
+  font-family: 'Evoria', system-ui, sans-serif;
 }
 
 .top-bar-actions {

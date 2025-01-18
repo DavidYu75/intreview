@@ -6,7 +6,13 @@ function App() {
 
   return (
     <>
-    <h1>Intreview</h1>
+       <div className="logo-main">
+         <img 
+           src="../public/images/Vector.svg" 
+           alt="Intreview" 
+           className="h-10 w-auto"
+        />
+      </div>
       <button onClick={() => navigate('/camera')} className="new-interview-button">
         New Intreview
       </button>

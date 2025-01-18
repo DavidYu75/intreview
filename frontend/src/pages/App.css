@@ -3,6 +3,10 @@
   text-align: center;
 }
 
+.logo-main {
+  @apply flex justify-center items-center w-full mt-8;
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;
