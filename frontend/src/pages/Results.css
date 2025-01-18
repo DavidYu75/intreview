@@ -1,101 +1,101 @@
 /* General Layout */
 .results-container {
-    @apply bg-gray-50 min-h-screen;
-  }
-  .results-header {
-    @apply flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200;
-  }
-  .back-button {
-    @apply flex items-center text-white hover:text-gray-200;
-  }
-  .header-info {
-    @apply text-center;
-  }
-  .title {
-    @apply text-xl font-bold text-gray-900;
-  }
-  .subtitle {
-    @apply text-sm text-gray-600;
-  }
-  .download-button {
-    @apply flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700;
-  }
-  
-  /* Section Styles */
-  .section-card {
-    @apply bg-white rounded-lg shadow p-6 mb-6;
-  }
-  .section-title {
-    @apply text-lg font-semibold text-gray-900 mb-4;
-  }
-  
-  /* Overall Performance */
-  .overall-score {
-    @apply flex items-center justify-center gap-8;
-  }
-  .score-chart {
-    @apply w-24 h-24;
-  }
-  .score-details {
-    @apply flex flex-col space-y-4;
-  }
-  .score-label {
-    @apply text-sm text-gray-600;
-  }
-  .score-value {
-    @apply text-xl font-semibold text-gray-900;
-  }
-  
-  /* Analysis Section */
-  .analysis-section {
-    @apply grid grid-cols-1 lg:grid-cols-2 gap-6;
-  }
-  .analysis-content {
-    @apply space-y-4;
-  }
-  .analysis-item {
-    @apply flex flex-col space-y-2;
-  }
-  .metric-title {
-    @apply text-sm text-gray-600;
-  }
-  .progress-bar {
-    @apply bg-gray-200 rounded-full h-2;
-  }
-  .progress.green {
-    @apply bg-green-500 h-full rounded-full;
-  }
-  .progress.yellow {
-    @apply bg-yellow-500 h-full rounded-full;
-  }
-  .metric-value {
-    @apply text-sm font-medium text-gray-600;
-  }
-  
-  /* Key Moments */
-  .moments-list {
-    @apply space-y-4;
-    @apply text-sm text-gray-600;
-  }
-  .moment-icon {
-    @apply w-5 h-5 text-indigo-600;
-  }
-  
-  /* Recommendations */
-  .recommendations-list {
-    @apply space-y-4;
-    @apply text-sm text-gray-600;
-  }
-  .rec-icon {
-    @apply w-5 h-5 text-green-500;
-  }
+  @apply bg-gray-50 min-h-screen w-full flex flex-col;
+}
+.results-header {
+  @apply flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200;
+}
+.back-button {
+  @apply flex items-center text-white hover:text-gray-200;
+}
+.header-info {
+  @apply text-center;
+}
+.title {
+  @apply text-xl font-bold text-gray-900;
+}
+.subtitle {
+  @apply text-sm text-gray-600;
+}
+.download-button {
+  @apply flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700;
+}
+
+/* Section Styles */
+.section-card {
+  @apply bg-white rounded-lg shadow p-6 mb-6;
+}
+.section-title {
+  @apply text-lg font-semibold text-gray-900 mb-4;
+}
+
+/* Overall Performance */
+.overall-score {
+  @apply flex items-center justify-center gap-8;
+}
+.score-chart {
+  @apply w-24 h-24;
+}
+.score-details {
+  @apply flex flex-col space-y-4;
+}
+.score-label {
+  @apply text-sm text-gray-600;
+}
+.score-value {
+  @apply text-xl font-semibold text-gray-900;
+}
+
+/* Analysis Section */
+.analysis-section {
+  @apply grid grid-cols-1 lg:grid-cols-2 gap-6;
+}
+.analysis-content {
+  @apply space-y-4;
+}
+.analysis-item {
+  @apply flex flex-col space-y-2;
+}
+.metric-title {
+  @apply text-sm text-gray-600;
+}
+.progress-bar {
+  @apply bg-gray-200 rounded-full h-2;
+}
+.progress.green {
+  @apply bg-green-500 h-full rounded-full;
+}
+.progress.yellow {
+  @apply bg-yellow-500 h-full rounded-full;
+}
+.metric-value {
+  @apply text-sm font-medium text-gray-600;
+}
+
+/* Key Moments */
+.moments-list {
+  @apply space-y-4;
+  @apply text-sm text-gray-600;
+}
+.moment-icon {
+  @apply w-5 h-5 text-indigo-600;
+}
+
+/* Recommendations */
+.recommendations-list {
+  @apply space-y-4;
+  @apply text-sm text-gray-600;
+}
+.rec-icon {
+  @apply w-5 h-5 text-green-500;
+}
 
 .chart-svg {
-    @apply w-16 h-16;  /* Added to make chart smaller */
+  @apply w-16 h-16;  /* Added to make chart smaller */
 }
 
 .score-text {
-    @apply text-sm font-medium;  /* Added to make score text smaller */
+  @apply text-sm font-medium;  /* Added to make score text smaller */
 }
 
 /* Video Player */
@@ -105,4 +105,8 @@
 
 .video-player {
   @apply w-full aspect-video object-cover;
+}
+
+.main-content {
+  @apply flex-1 p-6 overflow-y-auto;
 }

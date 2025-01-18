@@ -1,51 +1,43 @@
-.page-container {
-  @apply bg-gray-50 min-h-screen;
+.camera-top-bar {
+  @apply bg-white border-b border-gray-200 py-2;
 }
 
-.top-bar {
-  @apply bg-white p-4 flex justify-between items-center border-b border-gray-200;
-}
-
-.top-bar-content {
-  @apply flex justify-between items-center w-full;
-}
-
-.title {
-  @apply text-xl font-bold text-gray-900;
-}
-
-.top-bar-actions {
-  @apply flex items-center gap-4 ml-auto text-gray-600;
-}
-
-.recording-indicator {
-  @apply flex items-center gap-2 text-gray-600;
-}
-
-.indicator-dot {
-  @apply w-3 h-3 bg-red-500 rounded-full animate-pulse;
-}
-
-.icon {
-  @apply w-7 h-7 text-gray-600;
+.camera-top-bar h2 {
+  @apply text-center text-gray-700 font-medium;
 }
 
 /* Main Content */
 .main-content {
-  @apply grid grid-cols-[2fr_1fr] gap-6 p-6;
+  @apply grid grid-cols-[2fr_1fr] gap-6 p-6 flex-1;
+  min-height: calc(100vh - 8.5rem); /* Adjust for header + top-bar + footer */
 }
 
 .video-section {
   @apply relative bg-white rounded-lg shadow flex flex-col justify-center items-center p-6;
+  height: fit-content;
+  min-height: 100%;
+  max-height: 85vh;
 }
 
 .video-feed {
-  @apply w-full h-full bg-gray-100 rounded-lg overflow-hidden;
+  @apply w-full h-full bg-gray-100 rounded-lg overflow-hidden relative;
 }
 
 .video {
   @apply w-full h-full object-cover;
   transform: scaleX(-1);
+}
+
+.recording-indicator {
+  @apply flex items-center gap-2 bg-black/50 text-white px-3 py-1 rounded-full;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
+}
+
+.indicator-dot {
+  @apply w-3 h-3 bg-red-500 rounded-full animate-pulse;
 }
 
 .video-controls {
@@ -79,6 +71,26 @@
 /* Feedback Panel */
 .feedback-panel {
   @apply bg-white rounded-lg shadow p-6 flex flex-col text-gray-600;
+  height: fit-content;
+  min-height: 100%;
+  max-height: calc(100vh - 6rem);
+  overflow-y: auto;
+}
+
+.panel-header {
+  @apply text-lg font-medium text-gray-800 mb-4;
+}
+
+.panel-section {
+  @apply mb-8 pb-8 border-b border-gray-200;
+}
+
+.panel-section:last-child {
+  @apply mb-0 pb-0 border-b-0;
+}
+
+.feedback-metrics {
+  @apply mt-2;
 }
 
 .feedback-metrics .metric {

@@ -1,13 +1,16 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Mic, Camera, Clock, BarChart, Download } from 'lucide-react';
 import './Results.css';
 
 const ResultsPage = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="results-container">
       {/* Header */}
       <header className="results-header">
-        <button className="back-button">
+        <button className="back-button" onClick={() => navigate('/')}>
           <ArrowLeft className="icon" />
           Back to Dashboard
         </button>

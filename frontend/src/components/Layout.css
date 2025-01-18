@@ -1,0 +1,34 @@
+.layout-container {
+  @apply flex flex-col min-h-screen w-full bg-gray-50;
+  /* Remove fixed height to allow content to push footer down */
+}
+
+.top-bar {
+  @apply bg-white p-4 flex justify-between items-center border-b border-gray-200;
+}
+
+.top-bar-content {
+  @apply flex justify-between items-center w-full;
+}
+
+.title {
+  @apply text-xl font-bold text-gray-900;
+}
+
+.top-bar-actions {
+  @apply flex items-center gap-4 ml-auto text-gray-600;
+}
+
+.icon {
+  @apply w-7 h-7 text-gray-600;
+}
+
+.layout-main {
+  @apply flex-1 w-full;
+  /* Remove min-height: 0 and overflow to allow natural content flow */
+}
+
+.layout-footer {
+  @apply bg-gray-900 border-t border-gray-200 py-4 text-center text-sm text-gray-400 w-full;
+  /* Remove mt-auto to allow footer to flow with content */
+}

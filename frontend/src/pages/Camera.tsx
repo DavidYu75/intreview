@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mic, Settings, Volume2 } from 'lucide-react';
+import { Mic, Volume2 } from 'lucide-react';
 import './Camera.css';
 
 const CameraPage = () => {
@@ -60,31 +60,21 @@ const CameraPage = () => {
   };
 
   return (
-    <div className="page-container">
-      {/* Top Bar */}
-      <div className="top-bar">
-        <div className="top-bar-content">
-          <span className="title">Intreview</span>
-          <div className="top-bar-actions">
+    <div className="container">
+      <div className="camera-top-bar">
+        <h2>Behavioral Interview Practice</h2>
+      </div>
+      <div className="main-content">
+        {/* Video Area */}
+        <div className="video-section">
+          <div className="video-feed">
+            <video ref={videoRef} autoPlay className="video"></video>
             {isRecording && (
               <div className="recording-indicator">
                 <div className="indicator-dot"></div>
                 <span>{formatTime(time)}</span>
               </div>
             )}
-            <button>
-              <Settings className="icon" />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="main-content">
-        {/* Video Area */}
-        <div className="video-section">
-          <div className="video-feed">
-            <video ref={videoRef} autoPlay className="video"></video>
           </div>
           <div className="video-controls">
             <button
@@ -107,54 +97,44 @@ const CameraPage = () => {
 
         {/* Feedback Panel */}
         <div className="feedback-panel">
-          <h2>Real-time Feedback</h2>
-          <div className="feedback-metrics">
-            <div className="metric">
-              <div className="metric-label">
-                <span>Speaking Pace</span>
-                <span>145 wpm</span>
-              </div>
-              <div className="progress-bar">
-                <div className="progress-bar-fill" style={{ width: '80%' }}></div>
-              </div>
-            </div>
-            <div className="metric">
-              <div className="metric-label">
-                <span>Eye Contact</span>
-                <span>Good</span>
-              </div>
-              <div className="progress-bar">
-                <div className="progress-bar-fill" style={{ width: '75%' }}></div>
-              </div>
-            </div>
-            <div className="metric">
-              <div className="metric-label">
-                <span>Voice Clarity</span>
-                <span>Clear</span>
-              </div>
-              <div className="progress-bar">
-                <div className="progress-bar-fill" style={{ width: '90%' }}></div>
-              </div>
-            </div>
-          </div>
-
-          {/* <h3>Live Suggestions</h3>
-          <div className="suggestions">
-            <div className="suggestion">
-              <AlertCircle className="icon alert" />
-              <p>Try to slow down slightly when explaining technical concepts.</p>
-            </div>
-            <div className="suggestion">
-              <AlertCircle className="icon success" />
-              <p>Good use of hand gestures to emphasize key points.</p>
-            </div>
-          </div> */}
-
-          <div className="current-question">
-            <h2>Current Question</h2>
+          <h3 className="panel-header">Current Question</h3>
+          <div className="panel-section">
             <p>
               Can you explain a challenging technical problem you've solved and walk me through your problem-solving approach?
             </p>
+          </div>
+
+          <h3 className="panel-header">Real-time Feedback</h3>
+          <div className="panel-section">
+            <div className="feedback-metrics">
+              <div className="metric">
+                <div className="metric-label">
+                  <span>Speaking Pace</span>
+                  <span>145 wpm</span>
+                </div>
+                <div className="progress-bar">
+                  <div className="progress-bar-fill" style={{ width: '80%' }}></div>
+                </div>
+              </div>
+              <div className="metric">
+                <div className="metric-label">
+                  <span>Eye Contact</span>
+                  <span>Good</span>
+                </div>
+                <div className="progress-bar">
+                  <div className="progress-bar-fill" style={{ width: '75%' }}></div>
+                </div>
+              </div>
+              <div className="metric">
+                <div className="metric-label">
+                  <span>Voice Clarity</span>
+                  <span>Clear</span>
+                </div>
+                <div className="progress-bar">
+                  <div className="progress-bar-fill" style={{ width: '90%' }}></div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
