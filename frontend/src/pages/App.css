@@ -7,6 +7,10 @@
   @apply flex justify-center items-center w-full mt-8;
 }
 
+.new-intreview-button {
+  @apply p-2;
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;

@@ -13,7 +13,7 @@ function App() {
            className="h-10 w-auto"
         />
       </div>
-      <button onClick={() => navigate('/camera')} className="new-interview-button">
+      <button onClick={() => navigate('/camera')} className="new-intreview-button">
         New Intreview
       </button>
     </>
