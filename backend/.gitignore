@@ -36,4 +36,4 @@ var/
 Thumbs.db
 
 # Media
-.wav
+*.wav
