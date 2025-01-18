@@ -30,33 +30,42 @@ const ResultsPage = () => {
           <h2 className="section-title">Overall Performance</h2>
           <div className="performance-grid">
             <div className="performance-chart">
-              <svg className="chart-svg" viewBox="0 0 36 36">
+              <svg className="chart-svg" viewBox="0 0 40 40">  {/* Increased from 36 36 for better proportions */}
                 <path
-                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  d="M20 2.0845 a 17.9155 17.9155 0 0 1 0 35.831 a 17.9155 17.9155 0 0 1 0 -35.831"  /* Adjusted coordinates */
                   fill="none"
                   stroke="#E5E7EB"
-                  strokeWidth="3"
+                  strokeWidth="2.5"  /* Adjusted for better visual at larger size */
                 />
                 <path
-                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  d="M20 2.0845 a 17.9155 17.9155 0 0 1 0 35.831 a 17.9155 17.9155 0 0 1 0 -35.831"  /* Adjusted coordinates */
                   fill="none"
                   stroke="#6366F1"
-                  strokeWidth="3"
+                  strokeWidth="2.5"  /* Adjusted for better visual at larger size */
                   strokeDasharray="85, 100"
                 />
-                <text x="18" y="20.35" className="score-text" textAnchor="middle" fill="#111827">85%</text>
+                <text 
+                  x="20" 
+                  y="21.5" /* Adjusted from 22 to 24 to move text down slightly */
+                  className="score-text" 
+                  textAnchor="middle" 
+                  dominantBaseline="middle" /* Added for better vertical centering */
+                  fill="#111827"
+                >
+                  85%
+                </text>
               </svg>
             </div>
             <div className="performance-details">
-              <div>
+              <div className="bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors">
                 <p className="metric-title">Technical Skills</p>
                 <p className="metric-value">90%</p>
               </div>
-              <div>
+              <div className="bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors">
                 <p className="metric-title">Communication</p>
                 <p className="metric-value">82%</p>
               </div>
-              <div>
+              <div className="bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors">
                 <p className="metric-title">Body Language</p>
                 <p className="metric-value">83%</p>
               </div>
@@ -69,21 +78,21 @@ const ResultsPage = () => {
           <section className="speech-analysis section-card">
             <h2 className="section-title">Speech Analysis</h2>
             <div className="analysis-metrics">
-              <div className="analysis-item">
+              <div className="analysis-item bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors">
                 <p className="metric-title">Speaking Pace</p>
                 <div className="progress-bar">
                   <div className="progress green" style={{ width: '80%' }}></div>
                 </div>
                 <p className="metric-value">145 wpm</p>
               </div>
-              <div className="analysis-item">
+              <div className="analysis-item bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors">
                 <p className="metric-title">Filler Words</p>
                 <div className="progress-bar">
                   <div className="progress yellow" style={{ width: '60%' }}></div>
                 </div>
                 <p className="metric-value">12 instances</p>
               </div>
-              <div className="analysis-item">
+              <div className="analysis-item bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors">
                 <p className="metric-title">Voice Clarity</p>
                 <div className="progress-bar">
                   <div className="progress green" style={{ width: '90%' }}></div>
@@ -96,21 +105,21 @@ const ResultsPage = () => {
           <section className="visual-analysis section-card">
             <h2 className="section-title">Visual Analysis</h2>
             <div className="analysis-metrics">
-              <div className="analysis-item">
+              <div className="analysis-item bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors">
                 <p className="metric-title">Eye Contact</p>
                 <div className="progress-bar">
                   <div className="progress green" style={{ width: '76%' }}></div>
                 </div>
                 <p className="metric-value">76%</p>
               </div>
-              <div className="analysis-item">
+              <div className="analysis-item bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors">
                 <p className="metric-title">Hand Gestures</p>
                 <div className="progress-bar">
                   <div className="progress green" style={{ width: '80%' }}></div>
                 </div>
                 <p className="metric-value">80%</p>
               </div>
-              <div className="analysis-item">
+              <div className="analysis-item bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors">
                 <p className="metric-title">Posture</p>
                 <div className="progress-bar">
                   <div className="progress green" style={{ width: '85%' }}></div>
@@ -124,29 +133,31 @@ const ResultsPage = () => {
         {/* Key Moments */}
         <section className="key-moments section-card">
           <h2 className="section-title">Key Moments</h2>
-          <ul className="moments-list">
-            <li>
-              <Clock className="icon moment-icon" />
-              <span>02:15 - Strong Technical Response</span>
-            </li>
-            <li>
-              <Clock className="icon moment-icon" />
-              <span>15:30 - Filler Words Detected</span>
-            </li>
-            <li>
-              <Clock className="icon moment-icon" />
-              <span>32:45 - Strong Communication</span>
-            </li>
-          </ul>
-          <div className="video-player-container">
-            <video 
-              className="video-player"
-              controls
-              playsInline
-            >
-              <source src="" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
+          <div className="key-moments-container">
+            <div className="video-player-container">
+              <video 
+                className="video-player"
+                controls
+                playsInline
+              >
+                <source src="" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+            <ul className="moments-list">
+              <li>
+                <Clock className="icon moment-icon" />
+                <span>02:15 - Strong Technical Response</span>
+              </li>
+              <li>
+                <Clock className="icon moment-icon" />
+                <span>15:30 - Filler Words Detected</span>
+              </li>
+              <li>
+                <Clock className="icon moment-icon" />
+                <span>32:45 - Strong Communication</span>
+              </li>
+            </ul>
           </div>
         </section>
 
@@ -154,15 +165,15 @@ const ResultsPage = () => {
         <section className="recommendations section-card">
           <h2 className="section-title">Recommendations</h2>
           <ul className="recommendations-list">
-            <li>
+            <li className="bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors flex items-center gap-4">
               <BarChart className="icon rec-icon" />
               <span>Use clear examples and maintain better eye contact for improved engagement.</span>
             </li>
-            <li>
+            <li className="bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors flex items-center gap-4">
               <Mic className="icon rec-icon" />
               <span>Speak at a slightly slower pace for complex topics and take deliberate pauses.</span>
             </li>
-            <li>
+            <li className="bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors flex items-center gap-4">
               <Camera className="icon rec-icon" />
               <span>Continue good use of hand gestures to emphasize points effectively.</span>
             </li>
