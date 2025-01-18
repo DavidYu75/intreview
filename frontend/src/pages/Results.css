@@ -1,0 +1,32 @@
+.results-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  background-color: #1a202c;
+  color: white;
+  min-height: 100vh;
+}
+
+.results-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 600px;
+}
+
+.result-item {
+  background-color: #2d3748;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.result-item h2 {
+  margin-bottom: 0.5rem;
+}
+
+.result-item p {
+  font-size: 1.25rem;
+  font-weight: bold;
+}

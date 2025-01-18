@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Mic, Settings, Volume2 } from 'lucide-react';
 import './Camera.css';
 
@@ -9,6 +10,7 @@ const CameraPage = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function getMedia() {
@@ -41,6 +43,7 @@ const CameraPage = () => {
         clearInterval(timerRef.current);
       }
       console.log(`Interview ended at ${time} seconds`);
+      navigate('/results');
     } else {
       setTime(0);
       timerRef.current = setInterval(() => {
