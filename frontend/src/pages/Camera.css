@@ -1,51 +1,180 @@
-.video-container {
-    position: relative;
-    height: 100%;
+.page-container {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    min-height: 100vh;
+    background-color: #1a202c;
+    color: white;
+  }
+  
+  .top-bar {
+    background-color: #2d3748;
     padding: 1rem;
-    border-radius: 8px;
-    margin: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .title {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+  
+  .top-bar-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .recording-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .indicator-dot {
+    width: 0.75rem;
+    height: 0.75rem;
+    background-color: #e53e3e;
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+  }
+  
+  .icon {
+    width: 1.7rem;
+    height: 1.7rem;
+  }
+  
+  /* Main Content */
+  .main-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .video-section {
+    position: relative;
+    background-color: #2d3748;
+    border-radius: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
   }
   
   .video-feed {
-    position: relative;
     width: 100%;
     height: 100%;
-    background: #333;
-    border-radius: 8px;
+    background-color: black;
+    border-radius: 0.5rem;
     overflow: hidden;
   }
   
+  .video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
   .video-controls {
+    display: flex;
+    gap: 1rem;
     position: absolute;
     bottom: 1rem;
     left: 1rem;
-    display: flex;
-    gap: 1rem;
     margin: 1rem;
+  }
+  
+  .control-button {
+    background-color: #4a5568;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .control-button:hover {
+    background-color: #718096;
+  }
+  
+  .control-button.recording {
+    background-color: #e53e3e;
+  }
+  
+  .control-button.ready {
+    background-color: #5a67d8;
   }
   
   .end-session-button {
     position: absolute;
     bottom: 1rem;
     right: 1rem;
-    padding: 0.5rem 1.5rem;
-    margin: 1rem;
     background-color: #e53e3e;
-    color: white;
-    border: none;
+    margin: 1rem;
+    padding: 0.5rem 1rem;
     border-radius: 0.25rem;
     font-weight: bold;
-    font-size: 0.875rem;
-    z-index: 10;
     cursor: pointer;
-    transition: background-color 0.2s, transform 0.2s;
+    transition: background-color 0.2s ease;
   }
   
   .end-session-button:hover {
     background-color: #c53030;
-    transform: scale(1.05);
   }
   
-  .end-session-button:active {
-    transform: scale(0.95);
+  /* Feedback Panel */
+  .feedback-panel {
+    background-color: #2d3748;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .feedback-metrics .metric {
+    margin-bottom: 1rem;
+  }
+  
+  .metric-label {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .progress-bar {
+    background-color: #4a5568;
+    height: 0.5rem;
+    border-radius: 0.25rem;
+  }
+  
+  .progress-bar-fill {
+    height: 100%;
+    background-color: #48bb78;
+    border-radius: 0.25rem;
+  }
+  
+  .suggestions {
+    margin-top: 1rem;
+  }
+  
+  .suggestion {
+    display: flex;
+    align-items: start;
+    gap: 0.5rem;
+  }
+  
+  .icon.alert {
+    color: #ecc94b;
+  }
+  
+  .icon.success {
+    color: #48bb78;
+  }
+  
+  .current-question {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid #4a5568;
   }
