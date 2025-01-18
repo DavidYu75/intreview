@@ -32,3 +32,11 @@
   @apply bg-gray-900 border-t border-gray-200 py-4 text-center text-sm text-gray-400 w-full;
   /* Remove mt-auto to allow footer to flow with content */
 }
+
+.logo-container {
+  @apply flex items-center;
+}
+
+.logo-container img {
+  @apply h-10 w-auto object-contain;  /* Changed from h-8 to h-10 */
+}

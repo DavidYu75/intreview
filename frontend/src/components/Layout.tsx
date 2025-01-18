@@ -14,7 +14,13 @@ const Layout: React.FC<LayoutProps> = ({ children}) => {
     <div className="layout-container">
       <div className="top-bar">
         <div className="top-bar-content">
-          <span className="title">Intreview</span>
+          <div className="logo-container">
+            <img 
+              src="../public/images/Vector.svg" 
+              alt="Intreview" 
+              className="h-10 w-auto"  // Changed from h-8 to h-10
+            />
+          </div>
           <div className="top-bar-actions">
             <button>
               <Settings className="icon" />
