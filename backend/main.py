@@ -1,5 +1,11 @@
+import sys
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from app.api.routes import session_routes
 
 app = FastAPI(
     title="Intreview API",
@@ -16,9 +22,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Include routers
+app.include_router(session_routes.router, prefix="/api")
+
 @app.get("/")
 async def root():
-    return {"message": "Welcome to Intreview API"}
+    return {
+        "message": "Welcome to Intreview API",
+        "docs_url": "/docs",
+        "openapi_url": "/openapi.json"
+    }
 
 if __name__ == "__main__":
     import uvicorn
