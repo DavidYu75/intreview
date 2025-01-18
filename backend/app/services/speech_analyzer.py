@@ -12,9 +12,12 @@ class SpeechMetrics(BaseModel):
     filler_word_count: int = 0
     clarity_score: float = 0.0
     confidence_scores: List[float] = []
-    filler_words: List[Dict[str, Any]] = []  # Changed to Any to handle different timestamp types
-    raw_transcript: str = ""
+    confidence: float = 0.0
+    low_confidence_segments: List[Dict[str, Any]] = []  # Added for tracking problematic segments
+    segment_confidences: List[Dict[str, Any]] = []  # Added for sentence-level confidence
+    overall_quality_score: float = 0.0  # Added composite score
     words: List[str] = []
+    raw_transcript: str = ""
     
 class SpeechAnalyzer:
     def __init__(self):
@@ -118,15 +121,59 @@ class SpeechAnalyzer:
             word_count = len(transcript.words)
             wpm = word_count / duration_minutes if duration_minutes > 0 else 0
 
-            # Calculate average confidence score
+            # Extract detailed confidence metrics
             confidence_scores = [word.confidence for word in transcript.words]
+            word_durations = [word.end - word.start for word in transcript.words]
+            total_duration = sum(word_durations)
+
+            # Track low confidence segments (words below 0.4 confidence)
+            low_confidence_segments = [
+                {
+                    "word": word.text,
+                    "confidence": word.confidence,
+                    "timestamp": word.start,
+                    "duration": word.end - word.start
+                }
+                for word in transcript.words
+                if word.confidence < 0.4
+            ]
+
+            # Calculate segment-level confidence (by sentences or phrases)
+            segments = transcript.utterances if hasattr(transcript, 'utterances') else [transcript]
+            segment_confidences = [
+                {
+                    "text": seg.text,
+                    "confidence": sum(w.confidence for w in seg.words) / len(seg.words) if seg.words else 0,
+                    "start_time": seg.start,
+                    "end_time": seg.end
+                }
+                for seg in segments
+            ]
+
+            # Calculate weighted average confidence based on word duration
+            weighted_confidence = sum(
+                score * duration / total_duration
+                for score, duration in zip(confidence_scores, word_durations)
+            ) if total_duration > 0 else 0
+
+            # Calculate overall quality score (composite metric)
             clarity_score = sum(confidence_scores) / len(confidence_scores) if confidence_scores else 0
+            filler_word_ratio = len(filler_words) / len(words) if words else 1
+            overall_quality = (
+                weighted_confidence * 0.4 +  # Weight for transcription confidence
+                clarity_score * 0.4 +        # Weight for pronunciation clarity
+                (1 - filler_word_ratio) * 0.2  # Weight for speech fluency
+            )
 
             return SpeechMetrics(
                 words_per_minute=wpm,
                 filler_word_count=len(filler_words),
                 clarity_score=clarity_score,
                 confidence_scores=confidence_scores,
+                confidence=weighted_confidence,
+                low_confidence_segments=low_confidence_segments,
+                segment_confidences=segment_confidences,
+                overall_quality_score=overall_quality,
                 filler_words=filler_words,
                 raw_transcript=transcript.text,
                 words=words

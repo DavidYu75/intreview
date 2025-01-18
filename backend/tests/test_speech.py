@@ -90,8 +90,16 @@ async def test_speech_analysis():
         print("Analysis Results")
         print("----------------")
         print(f"Speaking Rate: {metrics.words_per_minute:.0f} words per minute")
-        print(f"Speech Clarity: {metrics.clarity_score:.0%}")
+        print(f"Overall Confidence: {metrics.confidence:.1%}")
+        print(f"Speech Clarity: {metrics.clarity_score:.1%}")
+        print(f"Quality Score: {metrics.overall_quality_score:.1%}")
         print(f"Total Filler Words: {metrics.filler_word_count}")
+        
+        if metrics.low_confidence_segments:
+            print("\nLow Confidence Segments")
+            print("----------------------")
+            for segment in metrics.low_confidence_segments:
+                print(f"• {segment['word']} ({segment['confidence']:.1%})")
         
         # Group filler words by type
         single_fillers = [f for f in metrics.filler_words if f['type'] == 'single']
