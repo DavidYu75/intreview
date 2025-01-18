@@ -61,9 +61,6 @@ const CameraPage = () => {
 
   return (
     <div className="container">
-      <div className="camera-top-bar">
-        <h2>Behavioral Interview Practice</h2>
-      </div>
       <div className="main-content">
         {/* Video Area */}
         <div className="video-section">
@@ -97,6 +94,9 @@ const CameraPage = () => {
 
         {/* Feedback Panel */}
         <div className="feedback-panel">
+          <h1 className="main-header">Behavioral Interview Practice</h1>
+          <div className="header-divider"></div>
+
           <h3 className="panel-header">Current Question</h3>
           <div className="panel-section">
             <p>

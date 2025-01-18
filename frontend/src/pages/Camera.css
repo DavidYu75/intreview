@@ -8,19 +8,22 @@
 
 /* Main Content */
 .main-content {
-  @apply grid grid-cols-[2fr_1fr] gap-6 p-6 flex-1;
+  @apply grid grid-cols-[2fr_1fr] gap-4 p-6 flex-1;
   min-height: calc(100vh - 8.5rem); /* Adjust for header + top-bar + footer */
 }
 
 .video-section {
-  @apply relative bg-white rounded-lg shadow flex flex-col justify-center items-center p-6;
+  @apply relative bg-white rounded-lg shadow flex flex-col justify-center items-center p-4;
   height: fit-content;
-  min-height: 100%;
-  max-height: 85vh;
+  min-height: 90%;
+  max-height: 80vh;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .video-feed {
-  @apply w-full h-full bg-gray-100 rounded-lg overflow-hidden relative;
+  @apply w-full bg-gray-100 rounded-lg overflow-hidden relative;
+  height: calc(100% - 4rem);  /* Adjust height to account for controls */
 }
 
 .video {
@@ -29,7 +32,7 @@
 }
 
 .recording-indicator {
-  @apply flex items-center gap-2 bg-black/50 text-white px-3 py-1 rounded-full;
+  @apply flex items-center gap-2 bg-indigo-400/50 text-white px-3 py-1 rounded-full;
   position: absolute;
   top: 1rem;
   right: 1rem;
@@ -75,6 +78,14 @@
   min-height: 100%;
   max-height: calc(100vh - 6rem);
   overflow-y: auto;
+}
+
+.main-header {
+  @apply text-2xl font-bold text-gray-800 mb-2;
+}
+
+.header-divider {
+  @apply w-full h-px bg-gray-200 mb-6;
 }
 
 .panel-header {
