@@ -101,7 +101,7 @@ const CameraPage = () => {
             className={`end-session-button ${isRecording ? 'end' : 'start'}`}
             onClick={handleRecording}
           >
-            {isRecording ? 'End Session' : 'Start Interview'}
+            {isRecording ? 'End Session' : 'Start Intreview'}
           </button>
         </div>
 
