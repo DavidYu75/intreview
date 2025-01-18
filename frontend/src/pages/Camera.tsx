@@ -53,35 +53,31 @@ const InterviewPage = () => {
 
             {/* Video Controls */}
             <div className="video-controls">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <button 
-                    className={`control-button ${isRecording ? 'bg-red-500 hover:bg-red-600' : 'bg-indigo-500 hover:bg-indigo-600'}`}
-                    onClick={() => setIsRecording(!isRecording)}
-                  >
-                    {isRecording ? (
-                      <MonitorStop className="w-6 h-6 text-white" />
-                    ) : (
-                      <Camera className="w-6 h-6 text-white" />
-                    )}
-                  </button>
-                  <button 
-                    className={`control-button ${isMuted ? 'bg-gray-600' : 'bg-gray-700'} hover:bg-gray-600`}
-                    onClick={() => setIsMuted(!isMuted)}
-                  >
-                    <Mic className="w-6 h-6 text-white" />
-                  </button>
-                  <button className="control-button bg-gray-700 hover:bg-gray-600">
-                    <Volume2 className="w-6 h-6 text-white" />
-                  </button>
-                </div>
-                <div className="flex items-center">
-                  <button className="end-session-button">
-                    End Session
-                  </button>
-                </div>
+              <div className="flex items-center space-x-4">
+                <button
+                  className={`control-button ${isRecording ? 'bg-red-500 hover:bg-red-600' : 'bg-indigo-500 hover:bg-indigo-600'}`}
+                  onClick={() => setIsRecording(!isRecording)}
+                >
+                  {isRecording ? (
+                    <MonitorStop className="w-6 h-6 text-white" />
+                  ) : (
+                    <Camera className="w-6 h-6 text-white" />
+                  )}
+                </button>
+                <button
+                  className={`control-button ${isMuted ? 'bg-gray-600' : 'bg-gray-700'} hover:bg-gray-600`}
+                  onClick={() => setIsMuted(!isMuted)}
+                >
+                  <Mic className="w-6 h-6 text-white" />
+                </button>
+                <button className="control-button bg-gray-700 hover:bg-gray-600">
+                  <Volume2 className="w-6 h-6 text-white" />
+                </button>
               </div>
             </div>
+
+            {/* End Session Button */}
+            <button className="end-session-button">End Session</button>
           </div>
         </div>
 
