@@ -11,3 +11,7 @@ torch>=2.1.0
 assemblyai>=0.17.0
 python-dotenv>=1.0.0
 mediapipe>=0.10.9
+pytest>=7.4.0
+httpx>=0.25.0
+pytest-asyncio>=0.21.1
+websockets>=12.0
