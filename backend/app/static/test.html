@@ -3,41 +3,162 @@
 <head>
     <title>Intreview WebSocket Test</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        #videoFeed { background: #ddd; width: 640px; height: 480px; }
-        #log { height: 200px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; margin-top: 20px; }
-        button { margin: 10px 0; padding: 8px 16px; }
-        .status { margin: 10px 0; }
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        #videoFeed { 
+            background: #ddd; 
+            width: 640px; 
+            height: 480px;
+            margin-bottom: 10px;
+        }
+        #log { 
+            height: 200px; 
+            overflow-y: scroll; 
+            border: 1px solid #ccc; 
+            padding: 10px; 
+            background: #f5f5f5;
+            font-family: monospace;
+        }
+        button { 
+            margin: 10px 5px; 
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+        .controls {
+            margin-bottom: 20px;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 5px;
+            background: #eee;
+            border-radius: 4px;
+        }
+        .metrics-panel {
+            padding: 15px;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .metric {
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        .metric-label {
+            font-weight: bold;
+        }
+        .metric-value {
+            font-family: monospace;
+        }
+        .attention-good {
+            color: green;
+        }
+        .attention-poor {
+            color: red;
+        }
     </style>
 </head>
 <body>
     <h1>Intreview WebSocket Test</h1>
     
-    <div>
+    <div class="controls">
         <button onclick="startSession()">1. Start Session</button>
         <button onclick="connectWebSocket()">2. Connect WebSocket</button>
         <button onclick="startCamera()">3. Start Camera</button>
         <button onclick="stopCamera()">Stop Camera</button>
     </div>
 
-    <video id="videoFeed" autoplay playsinline></video>
-    <canvas id="canvas" style="display:none;"></canvas>
+    <div class="container">
+        <div class="video-container">
+            <video id="videoFeed" autoplay playsinline></video>
+            <div class="status">Session ID: <span id="sessionId">None</span></div>
+            <div class="status">WebSocket Status: <span id="wsStatus">Disconnected</span></div>
+            
+            <div class="metrics-panel">
+                <h3>Real-time Metrics</h3>
+                <div class="metric">
+                    <span class="metric-label">Face Detected:</span>
+                    <span class="metric-value" id="faceDetected">No</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Attention Status:</span>
+                    <span class="metric-value" id="attentionStatus">Unknown</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Face Position:</span>
+                    <span class="metric-value" id="facePosition">Unknown</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Confidence:</span>
+                    <span class="metric-value" id="confidence">0.00</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Frame Rate:</span>
+                    <span class="metric-value" id="frameRate">0 fps</span>
+                </div>
+            </div>
+        </div>
 
-    <div class="status">Session ID: <span id="sessionId">None</span></div>
-    <div class="status">WebSocket Status: <span id="wsStatus">Disconnected</span></div>
-    
-    <div id="log"></div>
+        <div>
+            <h3>Event Log</h3>
+            <div id="log"></div>
+        </div>
+    </div>
+
+    <canvas id="canvas" style="display:none;"></canvas>
 
     <script>
         let sessionId = null;
         let ws = null;
         let videoStream = null;
         let isStreaming = false;
+        let frameCount = 0;
+        let lastFrameTime = Date.now();
+
+        function updateFrameRate() {
+            const now = Date.now();
+            const elapsed = (now - lastFrameTime) / 1000;
+            const fps = Math.round(frameCount / elapsed);
+            document.getElementById('frameRate').textContent = `${fps} fps`;
+            frameCount = 0;
+            lastFrameTime = now;
+        }
+        setInterval(updateFrameRate, 1000);
 
         function log(message) {
             const logDiv = document.getElementById('log');
-            logDiv.innerHTML += message + '<br>';
-            logDiv.scrollTop = logDiv.scrollHeight;
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML = `[${timestamp}] ${message}<br>` + logDiv.innerHTML;
+            logDiv.scrollTop = 0;
+        }
+
+        function updateMetrics(feedback) {
+            document.getElementById('faceDetected').textContent = feedback.face_detected ? 'Yes' : 'No';
+            
+            const attentionStatus = document.getElementById('attentionStatus');
+            attentionStatus.textContent = feedback.attention_status;
+            attentionStatus.className = feedback.attention_status === 'centered' ? 'attention-good' : 'attention-poor';
+            
+            if (feedback.face_position) {
+                document.getElementById('facePosition').textContent = 
+                    `X: ${feedback.face_position.x.toFixed(0)}, Y: ${feedback.face_position.y.toFixed(0)}`;
+            }
+            
+            if (feedback.confidence) {
+                document.getElementById('confidence').textContent = 
+                    (parseFloat(feedback.confidence) * 100).toFixed(1) + '%';
+            }
         }
 
         async function startSession() {
@@ -74,7 +195,9 @@
                 
                 ws.onmessage = (event) => {
                     const data = JSON.parse(event.data);
-                    log('Received: ' + JSON.stringify(data, null, 2));
+                    if (data.type === 'video_feedback' && data.feedback) {
+                        updateMetrics(data.feedback);
+                    }
                 };
                 
                 ws.onerror = (error) => {
@@ -95,7 +218,11 @@
         async function startCamera() {
             try {
                 videoStream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { width: 640, height: 480 },
+                    video: { 
+                        width: 640, 
+                        height: 480,
+                        facingMode: "user"
+                    },
                     audio: true 
                 });
                 const videoElement = document.getElementById('videoFeed');
@@ -136,12 +263,13 @@
                     type: 'video',
                     frame: frame.split(',')[1]
                 }));
+                frameCount++;
             } catch (error) {
                 log('Error sending frame: ' + error);
                 console.error('Frame sending error:', error);
             }
 
-            setTimeout(sendVideoFrames, 100); // Send frame every 100ms
+            requestAnimationFrame(sendVideoFrames);
         }
     </script>
 </body>
