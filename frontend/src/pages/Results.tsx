@@ -271,7 +271,7 @@ const ResultsPage = () => {
           Back to Dashboard
         </button>
         <div className="header-info">
-          <h1 className="title">Technical Interview Results</h1>
+          <h1 className="title">Behavioral Interview Results</h1>
           <p className="date">
             {formatDate(results.interview_date)} • {formatDuration(results.duration_minutes)}
           </p>
