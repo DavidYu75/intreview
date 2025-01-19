@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime
 from bson import ObjectId
 
-from app.services.websocket_handler import handle_websocket
+from app.services.websocket_handler import handle_websocket, analysis_manager  # Add analysis_manager import
 from app.services.recording_storage import RecordingStorage
 from app.db.models.analysis_models import AnalysisStorage
 from app.services.auth_service import AuthService
@@ -12,6 +12,9 @@ from app.db.models.user_models import User
 from app.core.config import get_settings
 from ..routes.analysis_routes import analyze_speech
 import tempfile
+import logging
+
+logger = logging.getLogger(__name__)
 
 settings = get_settings()
 
@@ -30,7 +33,11 @@ active_sessions: Dict[str, Dict] = {}
 @router.websocket("/ws/video")
 async def websocket_video_endpoint(websocket: WebSocket):
     """WebSocket endpoint for real-time video processing - No auth required"""
-    await handle_websocket(websocket)
+    logger.info("WebSocket connection initiated")
+    try:
+        await handle_websocket(websocket)
+    except Exception as e:
+        logger.error(f"WebSocket error: {str(e)}")
 
 @router.post("/analyze")
 async def analyze_video():
@@ -215,7 +222,7 @@ async def end_session(
     audio_file: UploadFile = File(...),
     current_user: User = Depends(auth_service.get_current_user)
 ):
-    """End an interview session and analyze the audio"""
+    logger.info(f"Starting end_session for session {session_id}")
     try:
         # First check if session exists and belongs to user
         session = await recording_storage.db.recordings.find_one({
@@ -229,37 +236,35 @@ async def end_session(
                 detail="Session not found or access denied"
             )
         
+        # Get video analysis summary and log it
+        logger.info("Fetching video analysis summary...")
+        summary = await analysis_manager.get_session_summary()
+        video_metrics = summary["video_metrics"]
+        logger.info(f"Raw video metrics: {video_metrics}")
+
         # Analyze the audio
+        logger.info("Starting audio analysis...")
         analysis_results = await analyze_speech(audio_file)
+        logger.info(f"Raw audio analysis: {analysis_results}")
         
-        # Update session with analysis results and end time
-        end_time = datetime.utcnow()
-        await recording_storage.db.recordings.update_one(
-            {"session_id": session_id},
-            {
-                "$set": {
-                    "status": "completed",
-                    "end_time": end_time,
-                    "analysis_results": analysis_results.dict()
-                }
-            }
-        )
-        
-        # Update in-memory session data
-        if session_id in active_sessions:
-            active_sessions[session_id].update({
-                "status": "completed",
-                "end_time": end_time,
-                "analysis_results": analysis_results.dict()
-            })
-        
-        return {
-            "message": "Session ended successfully",
-            "analysis": analysis_results
+        # Combine results with explicit logging
+        combined_results = {
+            **analysis_results.dict(),
+            "eye_contact": round(video_metrics.get("eye_contact_score", 0), 1),
+            "sentiment": round(video_metrics.get("sentiment_score", 0), 1),
+            "posture": round(video_metrics.get("posture_score", 0), 1),
         }
+        logger.info(f"Final combined results: {combined_results}")
+
+        response_data = {
+            "message": "Session ended successfully",
+            "analysis": combined_results
+        }
+        logger.info(f"Sending response: {response_data}")
+        return response_data
         
     except Exception as e:
-        logger.error(f"Error ending session: {str(e)}")
+        logger.error(f"Error in end_session: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=500,
             detail=f"Error ending session: {str(e)}"

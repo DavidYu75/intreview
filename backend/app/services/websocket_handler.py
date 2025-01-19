@@ -3,6 +3,7 @@ from typing import Dict, List
 import json
 import asyncio
 from datetime import datetime
+import logging
 
 from app.services.video_processor import VideoProcessor
 from app.services.speech_analyzer import SpeechAnalyzer
@@ -10,27 +11,30 @@ import cv2
 import numpy as np
 import base64
 
+logger = logging.getLogger(__name__)
+
 class AnalysisManager:
     def __init__(self):
         self.video_processor = VideoProcessor()
         self.speech_analyzer = SpeechAnalyzer()
 
     async def process_frame(self, frame_data: str):
-        """Process and analyze video frame"""
+        """
+        Decode the incoming frame data (base64), pass to VideoProcessor,
+        return real-time feedback.
+        """
         try:
-            # Process frame for real-time feedback
             encoded_data = frame_data.split(',')[1] if ',' in frame_data else frame_data
-            
             nparr = np.frombuffer(base64.b64decode(encoded_data), np.uint8)
             frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-            
+
             if frame is None:
                 return {
                     "face_detected": False,
                     "attention_status": "error",
                     "sentiment": "neutral"
                 }
-            
+
             feedback = await self.video_processor.get_realtime_feedback(frame)
             return feedback
             
@@ -40,6 +44,26 @@ class AnalysisManager:
                 "face_detected": False,
                 "attention_status": "error",
                 "sentiment": "neutral"
+            }
+
+    async def process_audio(self, audio_data: str):
+        """
+        Decode the incoming audio data (base64), pass to SpeechAnalyzer,
+        return real-time feedback (like filler words, partial transcript, etc.).
+        """
+        try:
+            encoded_data = audio_data.split(',')[1] if ',' in audio_data else audio_data
+            audio_binary = base64.b64decode(encoded_data)
+
+            feedback = await self.speech_analyzer.get_realtime_feedback(audio_binary)
+            return feedback
+            
+        except Exception as e:
+            print(f"Error processing audio: {e}")
+            return {
+                "text": "",
+                "is_filler_word": False,
+                "confidence": None
             }
 
     async def process_audio(self, audio_data: str):
@@ -63,20 +87,40 @@ class AnalysisManager:
                 "confidence": None
             }
 
+    async def get_session_summary(self):
+        """Get summary of the entire session"""
+        video_summary = await self.video_processor.get_session_summary()
+        return {
+            "video_metrics": video_summary.dict()
+        }
+
 # Create a global manager
 analysis_manager = AnalysisManager()
 
 async def handle_websocket(websocket: WebSocket):
     """Main WebSocket handler"""
+    logger.info("New WebSocket connection established")
     await websocket.accept()
     
     try:
+        frame_count = 0
         while True:
-            # Receive and process messages
             data = await websocket.receive_json()
-            response = {}
             
+            if data["type"] == "end_session":
+                logger.info("Received end_session request")
+                summary = await analysis_manager.get_session_summary()
+                logger.info(f"Session summary generated: {summary}")
+                await websocket.send_json({
+                    "type": "session_summary",
+                    "data": summary
+                })
+                break
+
             if data["type"] == "video":
+                frame_count += 1
+                if frame_count % 30 == 0:  # Log every 30th frame
+                    logger.debug(f"Processing video frame {frame_count}")
                 feedback = await analysis_manager.process_frame(data["frame"])
                 response = {
                     "type": "video_feedback",

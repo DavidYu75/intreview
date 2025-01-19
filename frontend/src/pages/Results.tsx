@@ -10,13 +10,17 @@ interface InterviewResults {
   confidence: number;
   raw_transcript: string;
   filler_words: Array<{
-    word: string;
-    timestamp: number;
-    type: string;
+      word: string;
+      timestamp: number;
+      type: string;
   }>;
   duration_minutes: number;
   interview_date: string;
+  eye_contact: number; // Percentage value (e.g., 76)
+  sentiment: number;   // Positive sentiment score (e.g., 80)
+  posture: number;     // Posture score (e.g., 85)
 }
+
 
 
 const getFillersScore = (fillerCount: number, durationMinutes: number) => {
@@ -84,13 +88,42 @@ const ResultsPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedResults = localStorage.getItem('interviewResults');
-    if (storedResults) {
-      setResults(JSON.parse(storedResults));
+    const fetchResults = async () => {
+      try {
+        const storedResults = localStorage.getItem('interviewResults');
+        console.log('Raw stored results from localStorage:', storedResults);
+        
+        if (!storedResults) {
+          console.error('No results found in localStorage');
+          throw new Error('No results found');
+        }
+
+        const parsedResults = JSON.parse(storedResults);
+        console.log('Parsed results:', parsedResults);
+
+        // Log individual metrics
+        console.log('Visual metrics:', {
+          eye_contact: parsedResults.eye_contact,
+          sentiment: parsedResults.sentiment,
+          posture: parsedResults.posture
+        });
+
+        const processedResults = {
+          ...parsedResults,
+          eye_contact: parsedResults.eye_contact ?? 0,
+          sentiment: parsedResults.sentiment ?? 0,
+          posture: parsedResults.posture ?? 0,
+        };
+
+        console.log('Final processed results:', processedResults);
+        setResults(processedResults);
+      } catch (err) {
+        console.error('Error processing results:', err);
+      }
       setIsLoading(false);
-    } else {
-      navigate('/'); // Redirect if no results
-    }
+    };
+
+    fetchResults();
   }, [navigate]);
 
   const formatDate = (dateString: string) => {
@@ -171,7 +204,6 @@ const ResultsPage = () => {
               <div className="bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors">
                 <p className="metric-title">Technical Skills</p>
                 <p className="metric-value">90%</p>
-              </div>
               <div className="bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors">
                 <p className="metric-title">Communication</p>
                 <p className="metric-value">82%</p>
@@ -181,6 +213,7 @@ const ResultsPage = () => {
                 <p className="metric-value">83%</p>
               </div>
             </div>
+          </div>
           </div>
         </section>
 
@@ -231,29 +264,21 @@ const ResultsPage = () => {
           <section className="visual-analysis section-card">
             <h2 className="section-title">Visual Analysis</h2>
             <div className="analysis-metrics">
-              <div className="analysis-item bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors">
-                <p className="metric-title">Eye Contact</p>
-                <div className="progress-bar">
-                  <div className="progress green" style={{ width: '76%' }}></div>
+              {(['eye_contact', 'sentiment', 'posture'] as const).map((metric) => (
+                <div key={metric} className="analysis-item bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors">
+                  <p className="metric-title">{metric.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}</p>
+                  <div className="progress-bar">
+                    <div 
+                      className={`progress ${getProgressColor(results[metric] || 0)}`}
+                      style={{ width: `${results[metric] || 0}%` }}
+                    ></div>
+                  </div>
+                  <p className="metric-value">{results[metric]?.toFixed(1) || '0'}%</p>
                 </div>
-                <p className="metric-value">76%</p>
-              </div>
-              <div className="analysis-item bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors">
-                <p className="metric-title">Hand Gestures</p>
-                <div className="progress-bar">
-                  <div className="progress green" style={{ width: '80%' }}></div>
-                </div>
-                <p className="metric-value">80%</p>
-              </div>
-              <div className="analysis-item bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors">
-                <p className="metric-title">Posture</p>
-                <div className="progress-bar">
-                  <div className="progress green" style={{ width: '85%' }}></div>
-                </div>
-                <p className="metric-value">85%</p>
-              </div>
+              ))}
             </div>
           </section>
+
         </div>
 
         {/* Key Moments */}

@@ -3,6 +3,16 @@ import numpy as np
 import mediapipe as mp
 from typing import Dict, List, Tuple, Optional
 from pydantic import BaseModel
+import logging
+
+logger = logging.getLogger(__name__)
+
+# Move VideoAnalysisSummary class definition before VideoProcessor
+class VideoAnalysisSummary(BaseModel):
+    eye_contact_score: float = 0.0
+    posture_score: float = 0.0
+    sentiment_score: float = 0.0
+    frame_count: int = 0
 
 class VideoProcessor:
     def __init__(self):
@@ -33,6 +43,8 @@ class VideoProcessor:
         # Points above eyebrows for reference
         self.left_forehead = 71      # Point above left eyebrow
         self.right_forehead = 301    # Point above right eyebrow
+        
+        self.frame_metrics = []  # Store metrics for final analysis
         
     def analyze_sentiment(self, landmarks) -> str:
         try:
@@ -132,6 +144,7 @@ class VideoProcessor:
                     
                 feedback["face_position"] = pos
                 
+            self.frame_metrics.append(feedback)
             return feedback
                 
         except Exception as e:
@@ -140,3 +153,38 @@ class VideoProcessor:
                 "attention_status": "error",
                 "sentiment": "neutral"
             }
+
+    async def get_session_summary(self) -> VideoAnalysisSummary:
+        """Calculate overall metrics for the session"""
+        logger.info(f"Generating session summary from {len(self.frame_metrics)} frames")
+        
+        if not self.frame_metrics:
+            logger.warning("No frame metrics available for summary")
+            return VideoAnalysisSummary()
+
+        total_frames = len(self.frame_metrics)
+        
+        # Calculate eye contact score
+        centered_frames = sum(1 for m in self.frame_metrics 
+                            if m.get("attention_status") == "centered")
+        eye_contact = (centered_frames / total_frames) * 100 if total_frames > 0 else 0
+
+        # Calculate posture score
+        good_posture_frames = sum(1 for m in self.frame_metrics 
+                                if m.get("attention_status") != "poor posture")
+        posture_score = (good_posture_frames / total_frames) * 100 if total_frames > 0 else 0
+
+        # Calculate sentiment score
+        positive_frames = sum(1 for m in self.frame_metrics 
+                            if m.get("sentiment") == "positive")
+        sentiment_score = (positive_frames / total_frames) * 100 if total_frames > 0 else 0
+
+        summary = VideoAnalysisSummary(
+            eye_contact_score=round(eye_contact, 1),
+            posture_score=round(posture_score, 1),
+            sentiment_score=round(sentiment_score, 1),
+            frame_count=total_frames
+        )
+        
+        logger.info(f"Generated summary: {summary}")
+        return summary

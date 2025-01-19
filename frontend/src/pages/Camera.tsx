@@ -18,7 +18,7 @@ const CameraPage = () => {
   // Eye contact is a boolean: true (Yes) / false (No)
   const [eyeContact, setEyeContact] = useState<boolean>(true);
 
-  const [ws, setWs] = useState<WebSocket | null>(null);
+  const wsRef = useRef<WebSocket | null>(null);  // Change ws state to ref
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -90,22 +90,20 @@ const CameraPage = () => {
 
   // -- WebSocket setup --
   useEffect(() => {
-    const newWs = new WebSocket('ws://localhost:8000/api/ws/video');
+    wsRef.current = new WebSocket('ws://localhost:8000/api/ws/video');
     
-    newWs.onopen = () => {
+    wsRef.current.onopen = () => {
       console.log('WebSocket Connected');
     };
     
-    newWs.onmessage = (evt) => {
+    wsRef.current.onmessage = (evt) => {
       try {
         const data = JSON.parse(evt.data);
+        console.log('WebSocket message received:', data);  // Debug log
         if (data.type === 'video_feedback') {
           const feedback = data.feedback;
-          // Example posture update
-          setPosture(feedback.attention_status === 'poor posture' ? 'Poor' : 'Good');
-          // Example sentiment update
+          setPosture(feedback.attention_status === 'poor_posture' ? 'Poor' : 'Good');
           setSentiment(feedback.sentiment.charAt(0).toUpperCase() + feedback.sentiment.slice(1));
-          // Example eye contact update
           setEyeContact(feedback.attention_status === 'centered');
         }
       } catch (error) {
@@ -113,19 +111,17 @@ const CameraPage = () => {
       }
     };
     
-    newWs.onerror = (error) => {
+    wsRef.current.onerror = (error) => {
       console.error('WebSocket Error:', error);
     };
     
-    newWs.onclose = (event) => {
+    wsRef.current.onclose = (event) => {
       console.log('WebSocket Closed:', event.code, event.reason);
     };
-    
-    setWs(newWs);
 
     return () => {
-      if (newWs.readyState === WebSocket.OPEN) {
-        newWs.close();
+      if (wsRef.current?.readyState === WebSocket.OPEN) {
+        wsRef.current.close();
       }
     };
   }, []);
@@ -149,52 +145,80 @@ const CameraPage = () => {
   // -- Start / Stop recording --
   const handleRecording = async () => {
     if (isRecording) {
-      setIsLoading(true); // Show loading screen
-      // -- Stop recording --
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-      }
-      
-      if (mediaRecorderRef.current) {
-        mediaRecorderRef.current.stop();
-        await new Promise<void>((resolve) => {
+      setIsLoading(true);
+      try {
+        // Stop timer
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+        }
+
+        // Get video metrics before stopping
+        if (wsRef.current?.readyState === WebSocket.OPEN) {
+          console.log("Requesting final analysis...");
+          wsRef.current.send(JSON.stringify({ type: "end_session" }));
+          
+          const videoMetrics = await new Promise((resolve) => {
+            const messageHandler = (event: MessageEvent) => {
+              const response = JSON.parse(event.data);
+              if (response.type === "session_summary") {
+                console.log("Received final metrics:", response.data);
+                wsRef.current?.removeEventListener('message', messageHandler);
+                resolve(response.data.video_metrics);
+              }
+            };
+            wsRef.current?.addEventListener('message', messageHandler);
+          });
+
+          // Stop recording and create audio blob
           if (mediaRecorderRef.current) {
-            mediaRecorderRef.current.onstop = () => resolve();
+            mediaRecorderRef.current.stop();
+            await new Promise<void>((resolve) => {
+              if (mediaRecorderRef.current) {
+                mediaRecorderRef.current.onstop = () => resolve();
+              }
+            });
           }
-        });
 
-        // Stop all tracks and clear video
-        if (streamRef.current) {
-          streamRef.current.getTracks().forEach(track => track.stop());
-        }
-        if (videoRef.current) {
-          videoRef.current.srcObject = null;
-        }
+          // Process audio
+          const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
+          const formData = new FormData();
+          formData.append('audio', audioBlob, 'interview.wav');
 
-        // Create audio file and send to backend
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
-        const formData = new FormData();
-        formData.append('audio', audioBlob, 'interview.wav');
-
-        try {
-          // Send to backend for analysis
+          // Send for analysis
           const response = await fetch('http://localhost:8000/analysis/speech', {
             method: 'POST',
             body: formData,
           });
 
-          if (response.ok) {
-            const results = await response.json();
-            localStorage.setItem('interviewResults', JSON.stringify(results));
-            navigate('/results');
-          }
-        } catch (error) {
-          console.error('Error analyzing speech:', error);
-          setIsLoading(false); // Hide loading if error
+          if (!response.ok) throw new Error('Speech analysis failed');
+
+          const audioResults = await response.json();
+          console.log("Audio analysis results:", audioResults);
+          
+          // Combine results
+          const combinedResults = {
+            ...audioResults,
+            eye_contact: (videoMetrics as { eye_contact_score: number }).eye_contact_score,
+            sentiment: (videoMetrics as { sentiment_score: number }).sentiment_score,
+            posture: (videoMetrics as { posture_score: number }).posture_score,
+          };
+          
+          console.log("Final combined results:", combinedResults);
+          localStorage.setItem('interviewResults', JSON.stringify(combinedResults));
+          
+          // Navigate to results
+          navigate('/results');
+        }
+      } catch (error) {
+        console.error('Error ending session:', error);
+      } finally {
+        setIsLoading(false);
+        if (wsRef.current?.readyState === WebSocket.OPEN) {
+          wsRef.current.close();
         }
       }
     } else {
-      // -- Start new recording --
+      // Start recording
       audioChunksRef.current = [];
       if (mediaRecorderRef.current) {
         mediaRecorderRef.current.start();
@@ -214,7 +238,7 @@ const CameraPage = () => {
 
     const captureFrame = (time: number) => {
       // If not recording or WS closed, stop
-      if (!isRecording || !ws || ws.readyState !== WebSocket.OPEN) {
+      if (!isRecording || !wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
         cancelAnimationFrame(animationId);
         return;
       }
@@ -241,7 +265,7 @@ const CameraPage = () => {
           // Reduce quality a bit more to speed up
           const frameData = canvas.toDataURL('image/jpeg', 0.4);
 
-          ws.send(JSON.stringify({ 
+          wsRef.current.send(JSON.stringify({ 
             type: 'video', 
             frame: frameData.split(',')[1],
           }));
@@ -261,7 +285,7 @@ const CameraPage = () => {
         cancelAnimationFrame(animationId);
       }
     };
-  }, [isRecording, ws]);
+  }, [isRecording]);
 
   // -- Mute / Unmute --
   const handleMute = () => {
