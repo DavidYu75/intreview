@@ -13,6 +13,8 @@ const CameraPage = () => {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,11 +22,19 @@ const CameraPage = () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ 
           video: true,
-          audio: true 
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: false, // Disable automatic gain control
+            sampleRate: 48000 // Higher sample rate for better quality
+          }
         });
+        
         streamRef.current = stream;
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
+          // Prevent audio feedback
+          videoRef.current.muted = true;
         }
 
         // Set up audio analysis
@@ -32,7 +42,16 @@ const CameraPage = () => {
         analyserRef.current = audioContextRef.current.createAnalyser();
         const source = audioContextRef.current.createMediaStreamSource(stream);
         source.connect(analyserRef.current);
-        analyserRef.current.fftSize = 256;
+        // Don't connect to audio destination to prevent feedback
+        // source.connect(audioContextRef.current.destination);
+
+        // Set up MediaRecorder
+        mediaRecorderRef.current = new MediaRecorder(stream);
+        mediaRecorderRef.current.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            audioChunksRef.current.push(event.data);
+          }
+        };
 
         // Start monitoring audio levels
         monitorAudioLevel();
@@ -71,14 +90,56 @@ const CameraPage = () => {
     updateLevel();
   };
 
-  const handleRecording = () => {
+  const handleRecording = async () => {
     if (isRecording) {
+      // Stop recording
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
-      console.log(`Interview ended at ${time} seconds`);
-      navigate('/results');
+      
+      if (mediaRecorderRef.current) {
+        mediaRecorderRef.current.stop();
+        await new Promise(resolve => {
+          if (mediaRecorderRef.current) {
+            mediaRecorderRef.current.onstop = resolve;
+          }
+        });
+
+        // Stop all tracks and clear video
+        if (streamRef.current) {
+          streamRef.current.getTracks().forEach(track => track.stop());
+        }
+        if (videoRef.current) {
+          videoRef.current.srcObject = null;
+        }
+
+        // Create audio file and send to backend
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
+        const formData = new FormData();
+        formData.append('audio', audioBlob, 'interview.wav');
+
+        try {
+          // Send to backend for analysis
+          const response = await fetch('http://localhost:8000/api/analyze', {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (response.ok) {
+            const results = await response.json();
+            localStorage.setItem('interviewResults', JSON.stringify(results));
+            navigate('/results');
+          }
+        } catch (error) {
+          console.error('Error analyzing speech:', error);
+        }
+      }
     } else {
+      // Start new recording
+      audioChunksRef.current = [];
+      if (mediaRecorderRef.current) {
+        mediaRecorderRef.current.start();
+      }
       setTime(0);
       timerRef.current = setInterval(() => {
         setTime(prevTime => prevTime + 1);
@@ -86,6 +147,17 @@ const CameraPage = () => {
     }
     setIsRecording(!isRecording);
   };
+
+  const handleMute = () => {
+    if (streamRef.current) {
+      const isCurrentlyMuted = isMuted;
+      streamRef.current.getAudioTracks().forEach(track => {
+        track.enabled = isCurrentlyMuted; // Mute or unmute based on current state
+      });
+      setIsMuted(!isCurrentlyMuted); // Update the state after toggling
+    }
+  };
+  
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -115,9 +187,9 @@ const CameraPage = () => {
           <div className="video-controls">
             <button
               className={`control-button ${isMuted ? 'muted' : ''}`}
-              onClick={() => setIsMuted(!isMuted)}
+              onClick={handleMute}
             >
-              <Mic className="icon" />
+              <Mic className={`icon ${isMuted ? 'text-red-500' : ''}`} />
             </button>
             <button className="control-button">
               <Volume2 className="icon" />

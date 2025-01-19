@@ -75,6 +75,14 @@
   @apply bg-indigo-600 text-white hover:bg-indigo-700;
 }
 
+.control-button.muted {
+  @apply bg-red-500 hover:bg-red-600;
+}
+
+.control-button.muted .icon {
+  @apply text-white;
+}
+
 .end-session-button {
   @apply absolute bottom-4 right-4 m-4 px-4 py-2 rounded-lg font-bold cursor-pointer transition-colors duration-200;
 }

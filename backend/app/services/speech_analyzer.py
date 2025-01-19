@@ -4,6 +4,7 @@ from pydantic import BaseModel
 import os
 from dotenv import load_dotenv
 import math
+from datetime import datetime
 
 # Load environment variables
 load_dotenv()
@@ -23,6 +24,8 @@ class SpeechMetrics(BaseModel):
     filler_words: List[Dict[str, Any]] = []  # Added missing attribute
     words: List[str] = []
     raw_transcript: str = ""
+    duration_minutes: float = 0.0
+    interview_date: str = ""
 
 class SpeechAnalyzer:
     def __init__(self):
@@ -101,7 +104,7 @@ class SpeechAnalyzer:
         - Returns weighted average considering word importance by duration
         """
         total_duration = sum(word_durations)
-        if total_duration == 0:
+        if (total_duration == 0):
             return 1.0  # Perfect confidence if no words
 
         weighted_sum = 0
@@ -138,6 +141,30 @@ class SpeechAnalyzer:
 
         # Final intelligibility score
         return max(base_score - filler_penalty, 0.5)  # Ensure a floor to prevent overly discouraging scores
+
+    def calculate_filler_word_score(self, filler_count: int, duration_minutes: float) -> float:
+        """
+        Calculate a score for filler word usage (0 to 1, where 1 is best)
+        Baseline expectations:
+        - Excellent: ≤ 1 filler per minute
+        - Good: ≤ 2 fillers per minute
+        - Fair: ≤ 4 fillers per minute
+        - Poor: > 4 fillers per minute
+        """
+        if duration_minutes == 0:
+            return 1.0
+
+        fillers_per_minute = filler_count / duration_minutes
+        
+        if fillers_per_minute <= 1:
+            return 1.0
+        elif fillers_per_minute <= 2:
+            return 0.8
+        elif fillers_per_minute <= 4:
+            return 0.6
+        else:
+            # Exponential decay for worse performances
+            return max(0.2, math.exp(-fillers_per_minute/10))
 
     async def analyze_speech(self, audio_file) -> SpeechMetrics:
         """
@@ -189,7 +216,16 @@ class SpeechAnalyzer:
             # Calculate metrics
             weighted_confidence = self.calculate_weighted_confidence(confidence_scores, word_durations)
             filler_word_ratio = len(filler_words) / len(words) if words else 0
-            speech_intelligibility = self.calculate_speech_intelligibility(confidence_scores, filler_word_ratio)
+            filler_word_score = self.calculate_filler_word_score(len(filler_words), duration_minutes)
+            
+            # Updated speech intelligibility calculation with proper weighting
+            speech_intelligibility = (
+                weighted_confidence * 0.6 +  # Base confidence has higher weight
+                filler_word_score * 0.4      # Filler word score has lower weight
+            )
+
+            # Get current date and time
+            interview_date = datetime.now().isoformat()
 
             return SpeechMetrics(
                 words_per_minute=wpm,
@@ -205,7 +241,9 @@ class SpeechAnalyzer:
                 segment_confidences=[],  # Placeholder for future implementation
                 filler_words=filler_words,
                 raw_transcript=transcript.text,
-                words=words
+                words=words,
+                duration_minutes=duration_minutes,
+                interview_date=interview_date
             )
 
         except Exception as e:
