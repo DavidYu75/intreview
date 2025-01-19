@@ -1,10 +1,46 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Mic, Camera, Clock, BarChart, Download } from 'lucide-react';
 import './Results.css';
 
+interface InterviewResults {
+  words_per_minute: number;
+  filler_word_count: number;
+  speech_intelligibility: number;
+  confidence: number;
+  raw_transcript: string;
+  filler_words: Array<{
+    word: string;
+    timestamp: number;
+    type: string;
+  }>;
+}
+
 const ResultsPage = () => {
+  const [results, setResults] = useState<InterviewResults | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedResults = localStorage.getItem('interviewResults');
+    if (storedResults) {
+      setResults(JSON.parse(storedResults));
+      setIsLoading(false);
+    } else {
+      navigate('/'); // Redirect if no results
+    }
+  }, [navigate]);
+
+  if (isLoading || !results) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-gray-600">Analyzing your interview...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="results-container">
@@ -52,7 +88,7 @@ const ResultsPage = () => {
                   dominantBaseline="middle" /* Added for better vertical centering */
                   fill="#111827"
                 >
-                  85%
+                  {Math.round(results.speech_intelligibility * 100)}%
                 </text>
               </svg>
             </div>
@@ -81,9 +117,9 @@ const ResultsPage = () => {
               <div className="analysis-item bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors">
                 <p className="metric-title">Speaking Pace</p>
                 <div className="progress-bar">
-                  <div className="progress green" style={{ width: '80%' }}></div>
+                  <div className="progress green" style={{ width: `${Math.min(100, (results.words_per_minute / 170) * 100)}%` }}></div>
                 </div>
-                <p className="metric-value">145 wpm</p>
+                <p className="metric-value">{Math.round(results.words_per_minute)} wpm</p>
               </div>
               <div className="analysis-item bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors">
                 <p className="metric-title">Filler Words</p>
@@ -93,7 +129,7 @@ const ResultsPage = () => {
                 <p className="metric-value">12 instances</p>
               </div>
               <div className="analysis-item bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors">
-                <p className="metric-title">Voice Clarity</p>
+                <p className="metric-title">Speech Intelligibility</p>
                 <div className="progress-bar">
                   <div className="progress green" style={{ width: '90%' }}></div>
                 </div>
