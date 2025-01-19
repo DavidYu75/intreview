@@ -1,0 +1,237 @@
+2025-01-19 03:36:19,290 - python_multipart.multipart - DEBUG - Calling on_part_begin with no data
+2025-01-19 03:36:19,291 - python_multipart.multipart - DEBUG - Calling on_header_field with data[42:61]
+2025-01-19 03:36:19,291 - python_multipart.multipart - DEBUG - Calling on_header_value with data[63:112]
+2025-01-19 03:36:19,291 - python_multipart.multipart - DEBUG - Calling on_header_end with no data
+2025-01-19 03:36:19,291 - python_multipart.multipart - DEBUG - Calling on_header_field with data[114:126]
+2025-01-19 03:36:19,291 - python_multipart.multipart - DEBUG - Calling on_header_value with data[128:137]
+2025-01-19 03:36:19,292 - python_multipart.multipart - DEBUG - Calling on_header_end with no data
+2025-01-19 03:36:19,292 - python_multipart.multipart - DEBUG - Calling on_headers_finished with no data
+2025-01-19 03:36:19,308 - python_multipart.multipart - DEBUG - Calling on_part_data with data[141:245760]
+2025-01-19 03:36:19,309 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:262144]
+2025-01-19 03:36:19,309 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:20777]
+2025-01-19 03:36:19,309 - python_multipart.multipart - DEBUG - Calling on_part_end with no data
+2025-01-19 03:36:19,309 - python_multipart.multipart - DEBUG - Calling on_end with no data
+2025-01-19 03:36:19,310 - app.api.routes.analysis_routes - INFO - Received audio file for analysis: interview.wav
+2025-01-19 03:36:19,311 - app.api.routes.analysis_routes - INFO - Analyzing speech from temporary file: C:\Users\bewxt\AppData\Local\Temp\tmptn8glrby.wav
+2025-01-19 03:36:19,672 - httpcore.connection - DEBUG - connect_tcp.started host='api.assemblyai.com' port=443 local_address=None timeout=30.0 socket_options=None
+2025-01-19 03:36:19,798 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001D7A7612A50>
+2025-01-19 03:36:19,799 - httpcore.connection - DEBUG - start_tls.started ssl_context=<ssl.SSLContext object at 0x000001D7A76149D0> server_hostname='api.assemblyai.com' timeout=30.0
+2025-01-19 03:36:19,891 - httpcore.connection - DEBUG - start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001D7A757B9B0>
+2025-01-19 03:36:19,891 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2025-01-19 03:36:19,892 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-01-19 03:36:19,892 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2025-01-19 03:36:21,761 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-01-19 03:36:21,762 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2025-01-19 03:36:21,969 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Sun, 19 Jan 2025 08:36:20 GMT'), (b'Content-Type', b'application/json'), (b'Content-Length', b'88'), (b'Connection', b'keep-alive'), (b'Set-Cookie', b'AWSALBTG=Yhm1mNmY96wKJLXDg95cT2eMX6DUQK4YHH278IXX7JmzLL9PA9l87yXub/qwNgW56rsSdBtDQOMaMMXCLMpiPk1MXZSRv9/u3K2/D77QrsVUD787fX0z6q415dbaSTKo7NpkGvbce/Oe2QC1pd5ZBpgp/7Sc2k53iN0tSFtwWaWj; Expires=Sun, 26 Jan 2025 08:36:18 GMT; Path=/'), (b'Set-Cookie', b'AWSALBTGCORS=Yhm1mNmY96wKJLXDg95cT2eMX6DUQK4YHH278IXX7JmzLL9PA9l87yXub/qwNgW56rsSdBtDQOMaMMXCLMpiPk1MXZSRv9/u3K2/D77QrsVUD787fX0z6q415dbaSTKo7NpkGvbce/Oe2QC1pd5ZBpgp/7Sc2k53iN0tSFtwWaWj; Expires=Sun, 26 Jan 2025 08:36:18 GMT; Path=/; SameSite=None; Secure'), (b'Access-Control-Allow-Headers', b'Content-Type, Authorization, X-Requested-With, User-Agent, AssemblyAI-Agent'), (b'Access-Control-Allow-Methods', b'POST, OPTIONS'), (b'Access-Control-Allow-Origin', b'*')])
+2025-01-19 03:36:21,971 - httpx - INFO - HTTP Request: POST https://api.assemblyai.com/v2/upload "HTTP/1.1 200 OK"
+2025-01-19 03:36:21,972 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2025-01-19 03:36:21,972 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-01-19 03:36:21,972 - httpcore.http11 - DEBUG - response_closed.started
+2025-01-19 03:36:21,973 - httpcore.http11 - DEBUG - response_closed.complete
+2025-01-19 03:36:21,974 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2025-01-19 03:36:21,974 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-01-19 03:36:21,975 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2025-01-19 03:36:21,975 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-01-19 03:36:21,975 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2025-01-19 03:36:22,237 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Sun, 19 Jan 2025 08:36:20 GMT'), (b'Content-Type', b'application/json; charset=UTF-8'), (b'Content-Length', b'1780'), (b'Connection', b'keep-alive'), (b'Set-Cookie', b'AWSALBTG=qzXWQc07A6dDA+9y0FygqQd3cDxtgchVLd/rB4pMbandZE6hWJ+/tsAt6urF0p6NBijVtaLZz+owsu41sYnhvUjGt8SC3NInJfZxxZfSKK2zGoQIudTwlvFEHlFZpx/ApmXQ6eOrois1q55qDWIRLEFlf/sRfnfGMGMKO0OTz5Tf; Expires=Sun, 26 Jan 2025 08:36:20 GMT; Path=/'), (b'Set-Cookie', b'AWSALBTGCORS=qzXWQc07A6dDA+9y0FygqQd3cDxtgchVLd/rB4pMbandZE6hWJ+/tsAt6urF0p6NBijVtaLZz+owsu41sYnhvUjGt8SC3NInJfZxxZfSKK2zGoQIudTwlvFEHlFZpx/ApmXQ6eOrois1q55qDWIRLEFlf/sRfnfGMGMKO0OTz5Tf; Expires=Sun, 26 Jan 2025 08:36:20 GMT; Path=/; SameSite=None; Secure'), (b'Set-Cookie', b'AWSALB=fLnQEPLcZY5gZONj7qPQQ/ogjAMIBWAml3eoTfe9e97kbriOLhppdS3XyGCEDCxUD0HR8Aola+w6e+hlJInkdtsGqdX0S8Q26aWPkSKD0/X7Ze+aAYk+/PUOq4Ew; Expires=Sun, 26 Jan 2025 08:36:20 GMT; Path=/'), (b'Set-Cookie', b'AWSALBCORS=fLnQEPLcZY5gZONj7qPQQ/ogjAMIBWAml3eoTfe9e97kbriOLhppdS3XyGCEDCxUD0HR8Aola+w6e+hlJInkdtsGqdX0S8Q26aWPkSKD0/X7Ze+aAYk+/PUOq4Ew; Expires=Sun, 26 Jan 2025 08:36:20 GMT; Path=/; SameSite=None; Secure'), (b'Access-Control-Allow-Origin', b'*'), (b'Access-Control-Allow-Headers', b'Content-Type, Authorization, X-Requested-With, User-Agent, AssemblyAI-Agent'), (b'Access-Control-Allow-Methods', b'POST, PUT, GET, OPTIONS'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload')])
+2025-01-19 03:36:22,240 - httpx - INFO - HTTP Request: POST https://api.assemblyai.com/v2/transcript "HTTP/1.1 200 OK"
+2025-01-19 03:36:22,240 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2025-01-19 03:36:22,241 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-01-19 03:36:22,241 - httpcore.http11 - DEBUG - response_closed.started
+2025-01-19 03:36:22,241 - httpcore.http11 - DEBUG - response_closed.complete
+2025-01-19 03:36:22,242 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'GET']>
+2025-01-19 03:36:22,242 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-01-19 03:36:22,243 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'GET']>
+2025-01-19 03:36:22,243 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-01-19 03:36:22,243 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'GET']>
+2025-01-19 03:36:22,399 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Sun, 19 Jan 2025 08:36:20 GMT'), (b'Content-Type', b'application/json; charset=UTF-8'), (b'Content-Length', b'1780'), (b'Connection', b'keep-alive'), (b'Set-Cookie', b'AWSALBTG=RaudOQ9Hz6NOg3SGO1ZIxtGRXVh7PMQhrS51ik9gCx3FbzdUbKJcCx0VKbX+p3UILr/BkSUFuOUkImPX9zZMfF1PzlEgoqCBOei7+JLjT2oWe5rNpfrqEsW2WjgZkPDXZ/VvkMVSmSlLkn+fwLNXRo9OSHRoseqAV/8Y1aLbFBzN; Expires=Sun, 26 Jan 2025 08:36:20 GMT; Path=/'), (b'Set-Cookie', b'AWSALBTGCORS=RaudOQ9Hz6NOg3SGO1ZIxtGRXVh7PMQhrS51ik9gCx3FbzdUbKJcCx0VKbX+p3UILr/BkSUFuOUkImPX9zZMfF1PzlEgoqCBOei7+JLjT2oWe5rNpfrqEsW2WjgZkPDXZ/VvkMVSmSlLkn+fwLNXRo9OSHRoseqAV/8Y1aLbFBzN; Expires=Sun, 26 Jan 2025 08:36:20 GMT; Path=/; SameSite=None; Secure'), (b'Set-Cookie', b'AWSALB=sl1XnZ0KIzzl6LlSKrFrOGqB/aMYVnWnqZXIP8UJnD+IXPX899Ie5x0dbhkKGeqTmuG9sM6M4ZybmTfmLe7O/F956cFILX4/M/+eu0125JIIQEKrbhp/84WdwNNz; Expires=Sun, 26 Jan 2025 08:36:20 GMT; Path=/'), (b'Set-Cookie', b'AWSALBCORS=sl1XnZ0KIzzl6LlSKrFrOGqB/aMYVnWnqZXIP8UJnD+IXPX899Ie5x0dbhkKGeqTmuG9sM6M4ZybmTfmLe7O/F956cFILX4/M/+eu0125JIIQEKrbhp/84WdwNNz; Expires=Sun, 26 Jan 2025 08:36:20 GMT; Path=/; SameSite=None; Secure'), (b'Access-Control-Allow-Origin', b'*'), (b'Access-Control-Allow-Headers', b'Content-Type, Authorization, X-Requested-With, User-Agent, AssemblyAI-Agent'), (b'Access-Control-Allow-Methods', b'POST, PUT, GET, OPTIONS'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Etag', b'"7ef889b7ef5f1538298b81e4b534df03c86628e8"')])
+2025-01-19 03:36:22,401 - httpx - INFO - HTTP Request: GET https://api.assemblyai.com/v2/transcript/4d0315bb-1f9b-45b1-8fcf-5f0938b21067 "HTTP/1.1 200 OK"
+2025-01-19 03:36:22,401 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'GET']>
+2025-01-19 03:36:22,401 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-01-19 03:36:22,402 - httpcore.http11 - DEBUG - response_closed.started
+2025-01-19 03:36:22,402 - httpcore.http11 - DEBUG - response_closed.complete
+2025-01-19 03:36:25,403 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'GET']>
+2025-01-19 03:36:25,405 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-01-19 03:36:25,405 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'GET']>
+2025-01-19 03:36:25,405 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-01-19 03:36:25,407 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'GET']>
+2025-01-19 03:36:26,056 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Sun, 19 Jan 2025 08:36:24 GMT'), (b'Content-Type', b'application/json; charset=UTF-8'), (b'Content-Length', b'1881'), (b'Connection', b'keep-alive'), (b'Set-Cookie', b'AWSALBTG=T8krsDP3C3ffoodm9VwlHU2SB5g1ujeu/f1qeJcJT1oOcQMmBisUACAnT8KRcj8mIFjiWb/pUpMaGMwbM/OgzMSP6wnjaDwjeUDaPG+hgtDYWnVXtVJOL4GGhI4uGofOLKC98YurXZaoBhiJAXmo/HhL/xkV1Yau7snXyRq+pkHP; Expires=Sun, 26 Jan 2025 08:36:24 GMT; Path=/'), (b'Set-Cookie', b'AWSALBTGCORS=T8krsDP3C3ffoodm9VwlHU2SB5g1ujeu/f1qeJcJT1oOcQMmBisUACAnT8KRcj8mIFjiWb/pUpMaGMwbM/OgzMSP6wnjaDwjeUDaPG+hgtDYWnVXtVJOL4GGhI4uGofOLKC98YurXZaoBhiJAXmo/HhL/xkV1Yau7snXyRq+pkHP; Expires=Sun, 26 Jan 2025 08:36:24 GMT; Path=/; SameSite=None; Secure'), (b'Set-Cookie', b'AWSALB=X1l1XWSR8b6MPW7iDtwhSB/vmzWxlSF4KztSKr8hRKKFzpMtGsz4jvBmd5JSFptMgKi9aVloRm7h5BYCGqrIUTw6V9urvT0WJuyi00N5tt+v6ITkPI2nPG/eeGPf; Expires=Sun, 26 Jan 2025 08:36:24 GMT; Path=/'), (b'Set-Cookie', b'AWSALBCORS=X1l1XWSR8b6MPW7iDtwhSB/vmzWxlSF4KztSKr8hRKKFzpMtGsz4jvBmd5JSFptMgKi9aVloRm7h5BYCGqrIUTw6V9urvT0WJuyi00N5tt+v6ITkPI2nPG/eeGPf; Expires=Sun, 26 Jan 2025 08:36:24 GMT; Path=/; SameSite=None; Secure'), (b'Access-Control-Allow-Origin', b'*'), (b'Access-Control-Allow-Headers', b'Content-Type, Authorization, X-Requested-With, User-Agent, AssemblyAI-Agent'), (b'Access-Control-Allow-Methods', b'POST, PUT, GET, OPTIONS'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Etag', b'"c641a22ff04bb7c6b630d1a080dc66b01a387d68"')])
+2025-01-19 03:36:26,058 - httpx - INFO - HTTP Request: GET https://api.assemblyai.com/v2/transcript/4d0315bb-1f9b-45b1-8fcf-5f0938b21067 "HTTP/1.1 200 OK"
+2025-01-19 03:36:26,059 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'GET']>
+2025-01-19 03:36:26,059 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-01-19 03:36:26,059 - httpcore.http11 - DEBUG - response_closed.started
+2025-01-19 03:36:26,059 - httpcore.http11 - DEBUG - response_closed.complete
+2025-01-19 03:36:44,951 - python_multipart.multipart - DEBUG - Calling on_part_begin with no data
+2025-01-19 03:36:44,952 - python_multipart.multipart - DEBUG - Calling on_header_field with data[42:61]
+2025-01-19 03:36:44,952 - python_multipart.multipart - DEBUG - Calling on_header_value with data[63:112]
+2025-01-19 03:36:44,953 - python_multipart.multipart - DEBUG - Calling on_header_end with no data
+2025-01-19 03:36:44,954 - python_multipart.multipart - DEBUG - Calling on_header_field with data[114:126]
+2025-01-19 03:36:44,954 - python_multipart.multipart - DEBUG - Calling on_header_value with data[128:137]
+2025-01-19 03:36:44,954 - python_multipart.multipart - DEBUG - Calling on_header_end with no data
+2025-01-19 03:36:44,954 - python_multipart.multipart - DEBUG - Calling on_headers_finished with no data
+2025-01-19 03:36:44,955 - python_multipart.multipart - DEBUG - Calling on_part_data with data[141:262144]
+2025-01-19 03:36:44,957 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:262144]
+2025-01-19 03:36:44,958 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:262144]
+2025-01-19 03:36:44,958 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:262144]
+2025-01-19 03:36:44,959 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:68474]
+2025-01-19 03:36:44,959 - python_multipart.multipart - DEBUG - Calling on_part_end with no data
+2025-01-19 03:36:44,960 - python_multipart.multipart - DEBUG - Calling on_end with no data
+2025-01-19 03:36:44,974 - app.api.routes.analysis_routes - INFO - Received audio file for analysis: interview.wav
+2025-01-19 03:36:44,977 - app.api.routes.analysis_routes - INFO - Analyzing speech from temporary file: C:\Users\bewxt\AppData\Local\Temp\tmpcpw43vr5.wav
+2025-01-19 03:36:44,989 - httpcore.connection - DEBUG - close.started
+2025-01-19 03:36:44,990 - httpcore.connection - DEBUG - close.complete
+2025-01-19 03:36:44,991 - httpcore.connection - DEBUG - connect_tcp.started host='api.assemblyai.com' port=443 local_address=None timeout=30.0 socket_options=None
+2025-01-19 03:36:45,078 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001D7A763F590>
+2025-01-19 03:36:45,078 - httpcore.connection - DEBUG - start_tls.started ssl_context=<ssl.SSLContext object at 0x000001D7A76149D0> server_hostname='api.assemblyai.com' timeout=30.0
+2025-01-19 03:36:45,169 - httpcore.connection - DEBUG - start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001D7A763F740>
+2025-01-19 03:36:45,169 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2025-01-19 03:36:45,170 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-01-19 03:36:45,171 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2025-01-19 03:36:48,109 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-01-19 03:36:48,109 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2025-01-19 03:36:48,292 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Sun, 19 Jan 2025 08:36:46 GMT'), (b'Content-Type', b'application/json'), (b'Content-Length', b'88'), (b'Connection', b'keep-alive'), (b'Set-Cookie', b'AWSALBTG=sZTn8JRCCCDzoMDVWPkwCaR858lzXFv26TcEyJnVZYbysWDf3TjiDC8rmhc/6xh8vaCsqaNsKPGVUVwke6f7a9G1/04TJnkJ0ciDRe875iWx304Bv1TQ9FJxqvUIbo3ivDVdRHsznakwo7jSCiJ1WWdgiXmb5GCmDEiixah9EmlS; Expires=Sun, 26 Jan 2025 08:36:43 GMT; Path=/'), (b'Set-Cookie', b'AWSALBTGCORS=sZTn8JRCCCDzoMDVWPkwCaR858lzXFv26TcEyJnVZYbysWDf3TjiDC8rmhc/6xh8vaCsqaNsKPGVUVwke6f7a9G1/04TJnkJ0ciDRe875iWx304Bv1TQ9FJxqvUIbo3ivDVdRHsznakwo7jSCiJ1WWdgiXmb5GCmDEiixah9EmlS; Expires=Sun, 26 Jan 2025 08:36:43 GMT; Path=/; SameSite=None; Secure'), (b'Access-Control-Allow-Headers', b'Content-Type, Authorization, X-Requested-With, User-Agent, AssemblyAI-Agent'), (b'Access-Control-Allow-Methods', b'POST, OPTIONS'), (b'Access-Control-Allow-Origin', b'*')])
+2025-01-19 03:36:48,294 - httpx - INFO - HTTP Request: POST https://api.assemblyai.com/v2/upload "HTTP/1.1 200 OK"
+2025-01-19 03:36:48,294 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2025-01-19 03:36:48,295 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-01-19 03:36:48,295 - httpcore.http11 - DEBUG - response_closed.started
+2025-01-19 03:36:48,295 - httpcore.http11 - DEBUG - response_closed.complete
+2025-01-19 03:36:48,296 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2025-01-19 03:36:48,296 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-01-19 03:36:48,296 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2025-01-19 03:36:48,298 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-01-19 03:36:48,298 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2025-01-19 03:36:48,593 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Sun, 19 Jan 2025 08:36:47 GMT'), (b'Content-Type', b'application/json; charset=UTF-8'), (b'Content-Length', b'1780'), (b'Connection', b'keep-alive'), (b'Set-Cookie', b'AWSALBTG=vKV45hdmVRm4Zb+p1XKfvvLb+NE2RVNcSvYadelZLP7O/c/JPKta62xWRJEXargZcw3Hux82CmprbJiDt/n82eR65OFSaShg9egTq7m5GUq1sT5GPV41T9DsYFl6UGOubA1135PVr4OushklrqDoeHYcrvnE0/HMYPA7ebWc+BDS; Expires=Sun, 26 Jan 2025 08:36:46 GMT; Path=/'), (b'Set-Cookie', b'AWSALBTGCORS=vKV45hdmVRm4Zb+p1XKfvvLb+NE2RVNcSvYadelZLP7O/c/JPKta62xWRJEXargZcw3Hux82CmprbJiDt/n82eR65OFSaShg9egTq7m5GUq1sT5GPV41T9DsYFl6UGOubA1135PVr4OushklrqDoeHYcrvnE0/HMYPA7ebWc+BDS; Expires=Sun, 26 Jan 2025 08:36:46 GMT; Path=/; SameSite=None; Secure'), (b'Set-Cookie', b'AWSALB=UFB4dnytzwvpl2XQNH4AKDKvx8uzOIrV4dGP2JpRWTs5n7oklVJLDinz6+PLkG9BpqJvJLjpO2yGQE4AHrxkoxcZ4cO19dR+minLoh/PjzttHM5wIoqGDyZ0+MRt; Expires=Sun, 26 Jan 2025 08:36:46 GMT; Path=/'), (b'Set-Cookie', b'AWSALBCORS=UFB4dnytzwvpl2XQNH4AKDKvx8uzOIrV4dGP2JpRWTs5n7oklVJLDinz6+PLkG9BpqJvJLjpO2yGQE4AHrxkoxcZ4cO19dR+minLoh/PjzttHM5wIoqGDyZ0+MRt; Expires=Sun, 26 Jan 2025 08:36:46 GMT; Path=/; SameSite=None; Secure'), (b'Access-Control-Allow-Origin', b'*'), (b'Access-Control-Allow-Headers', b'Content-Type, Authorization, X-Requested-With, User-Agent, AssemblyAI-Agent'), (b'Access-Control-Allow-Methods', b'POST, PUT, GET, OPTIONS'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload')])
+2025-01-19 03:36:48,595 - httpx - INFO - HTTP Request: POST https://api.assemblyai.com/v2/transcript "HTTP/1.1 200 OK"
+2025-01-19 03:36:48,595 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2025-01-19 03:36:48,596 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-01-19 03:36:48,596 - httpcore.http11 - DEBUG - response_closed.started
+2025-01-19 03:36:48,596 - httpcore.http11 - DEBUG - response_closed.complete
+2025-01-19 03:36:48,597 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'GET']>
+2025-01-19 03:36:48,598 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-01-19 03:36:48,599 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'GET']>
+2025-01-19 03:36:48,599 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-01-19 03:36:48,599 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'GET']>
+2025-01-19 03:36:48,754 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Sun, 19 Jan 2025 08:36:47 GMT'), (b'Content-Type', b'application/json; charset=UTF-8'), (b'Content-Length', b'1780'), (b'Connection', b'keep-alive'), (b'Set-Cookie', b'AWSALBTG=btmHLkR3QWVijCPkOOyt2xs3w+Qr0guwH1BfqjA490nc7tbrgPaiJWX2K7E5ixkckvYmVfdyLs/iJAMxCnlGerYanpnb4dDCAYlvRI1WGb5KpWAZSE7S1vdfIxTuaQzUuKd84qIFNkyI8GuSO3WLLKldWVMEjAYspbDaxU4v0HKM; Expires=Sun, 26 Jan 2025 08:36:47 GMT; Path=/'), (b'Set-Cookie', b'AWSALBTGCORS=btmHLkR3QWVijCPkOOyt2xs3w+Qr0guwH1BfqjA490nc7tbrgPaiJWX2K7E5ixkckvYmVfdyLs/iJAMxCnlGerYanpnb4dDCAYlvRI1WGb5KpWAZSE7S1vdfIxTuaQzUuKd84qIFNkyI8GuSO3WLLKldWVMEjAYspbDaxU4v0HKM; Expires=Sun, 26 Jan 2025 08:36:47 GMT; Path=/; SameSite=None; Secure'), (b'Set-Cookie', b'AWSALB=Gr66Oi/BKXNpTr/nWufZRjxpyASbTlQe5i6gpFhKv/vNs2HOLfeaK+/Ri4WN5kpUY+tMNHlE/angw4LMLCUF93us4GKcl6m3pzz4tPz9aLwklITOgya/5Vdc+c8X; Expires=Sun, 26 Jan 2025 08:36:47 GMT; Path=/'), (b'Set-Cookie', b'AWSALBCORS=Gr66Oi/BKXNpTr/nWufZRjxpyASbTlQe5i6gpFhKv/vNs2HOLfeaK+/Ri4WN5kpUY+tMNHlE/angw4LMLCUF93us4GKcl6m3pzz4tPz9aLwklITOgya/5Vdc+c8X; Expires=Sun, 26 Jan 2025 08:36:47 GMT; Path=/; SameSite=None; Secure'), (b'Access-Control-Allow-Origin', b'*'), (b'Access-Control-Allow-Headers', b'Content-Type, Authorization, X-Requested-With, User-Agent, AssemblyAI-Agent'), (b'Access-Control-Allow-Methods', b'POST, PUT, GET, OPTIONS'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Etag', b'"d0bce58f053416f50f77ae6f18f1c9328b7f87fd"')])
+2025-01-19 03:36:48,757 - httpx - INFO - HTTP Request: GET https://api.assemblyai.com/v2/transcript/c9fdb170-bee5-48a5-837b-f0f4f8243184 "HTTP/1.1 200 OK"
+2025-01-19 03:36:48,757 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'GET']>
+2025-01-19 03:36:48,757 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-01-19 03:36:48,757 - httpcore.http11 - DEBUG - response_closed.started
+2025-01-19 03:36:48,757 - httpcore.http11 - DEBUG - response_closed.complete
+2025-01-19 03:36:51,759 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'GET']>
+2025-01-19 03:36:51,760 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-01-19 03:36:51,760 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'GET']>
+2025-01-19 03:36:51,761 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-01-19 03:36:51,761 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'GET']>
+2025-01-19 03:36:51,921 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Sun, 19 Jan 2025 08:36:50 GMT'), (b'Content-Type', b'application/json; charset=UTF-8'), (b'Content-Length', b'1784'), (b'Connection', b'keep-alive'), (b'Set-Cookie', b'AWSALBTG=q+GuwIz2rnJcgZvMzlTi+J5i95TBGGZuMGqrISpl6ebDXst/WCIud907OLxAebFWFU3CXCKITwBhi6NxOvQbJvhXdJ6GlvV/BjYiAj0foLkg3yaMUXwC2I2S8gwog105PybSVuYivUiQrhwSwkpsjhQ9UKBa8A+01aXKxEcjHbIk; Expires=Sun, 26 Jan 2025 08:36:50 GMT; Path=/'), (b'Set-Cookie', b'AWSALBTGCORS=q+GuwIz2rnJcgZvMzlTi+J5i95TBGGZuMGqrISpl6ebDXst/WCIud907OLxAebFWFU3CXCKITwBhi6NxOvQbJvhXdJ6GlvV/BjYiAj0foLkg3yaMUXwC2I2S8gwog105PybSVuYivUiQrhwSwkpsjhQ9UKBa8A+01aXKxEcjHbIk; Expires=Sun, 26 Jan 2025 08:36:50 GMT; Path=/; SameSite=None; Secure'), (b'Set-Cookie', b'AWSALB=TOUe5Jp4+E6lj0z9trLPSyU2EePbjfRgXNTSnSPvp3iFIoS/J2Ni2RffDPErpRaC4tU/aWpkvWrZBmC1zCJNeP29MKwgI20sk3+3XIgoqwPtJBzHnnI+kBIxTKOc; Expires=Sun, 26 Jan 2025 08:36:50 GMT; Path=/'), (b'Set-Cookie', b'AWSALBCORS=TOUe5Jp4+E6lj0z9trLPSyU2EePbjfRgXNTSnSPvp3iFIoS/J2Ni2RffDPErpRaC4tU/aWpkvWrZBmC1zCJNeP29MKwgI20sk3+3XIgoqwPtJBzHnnI+kBIxTKOc; Expires=Sun, 26 Jan 2025 08:36:50 GMT; Path=/; SameSite=None; Secure'), (b'Access-Control-Allow-Origin', b'*'), (b'Access-Control-Allow-Headers', b'Content-Type, Authorization, X-Requested-With, User-Agent, AssemblyAI-Agent'), (b'Access-Control-Allow-Methods', b'POST, PUT, GET, OPTIONS'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Etag', b'"2e65ee076d59279bedf2df2e9269ba0b1ee9dced"')])
+2025-01-19 03:36:51,923 - httpx - INFO - HTTP Request: GET https://api.assemblyai.com/v2/transcript/c9fdb170-bee5-48a5-837b-f0f4f8243184 "HTTP/1.1 200 OK"
+2025-01-19 03:36:51,924 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'GET']>
+2025-01-19 03:36:51,924 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-01-19 03:36:51,924 - httpcore.http11 - DEBUG - response_closed.started
+2025-01-19 03:36:51,924 - httpcore.http11 - DEBUG - response_closed.complete
+2025-01-19 03:36:54,926 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'GET']>
+2025-01-19 03:36:54,927 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-01-19 03:36:54,927 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'GET']>
+2025-01-19 03:36:54,927 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-01-19 03:36:54,927 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'GET']>
+2025-01-19 03:36:55,122 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Sun, 19 Jan 2025 08:36:53 GMT'), (b'Content-Type', b'application/json; charset=UTF-8'), (b'Content-Length', b'1784'), (b'Connection', b'keep-alive'), (b'Set-Cookie', b'AWSALBTG=dL//gOFd4njuyGT6nancXaN8dnmCI1YWEaJi0vqNUp555bJf7xgof1QAcsUV7JK1jX7OzQGX4wjjaWFIQm8viJpYxw1ZCyHy19vyAaGyBoiK9OD5i3OteS5A41KmKrgVjj0vvG5K7Us2bOSB6qth7vYzI8WQW8lnTtgAKdmk7M9t; Expires=Sun, 26 Jan 2025 08:36:53 GMT; Path=/'), (b'Set-Cookie', b'AWSALBTGCORS=dL//gOFd4njuyGT6nancXaN8dnmCI1YWEaJi0vqNUp555bJf7xgof1QAcsUV7JK1jX7OzQGX4wjjaWFIQm8viJpYxw1ZCyHy19vyAaGyBoiK9OD5i3OteS5A41KmKrgVjj0vvG5K7Us2bOSB6qth7vYzI8WQW8lnTtgAKdmk7M9t; Expires=Sun, 26 Jan 2025 08:36:53 GMT; Path=/; SameSite=None; Secure'), (b'Set-Cookie', b'AWSALB=AJAlsciXZUdeLV0i1cOQ97edercAfq1nvl/o3L9OTjiEbqRkXEMi54KVAAQpYxs1C7xZuHSthXnnDI24paEb5RTHrD7vj0j8zfewjbq8GSjYwpFlr9VdOYw/WYW+; Expires=Sun, 26 Jan 2025 08:36:53 GMT; Path=/'), (b'Set-Cookie', b'AWSALBCORS=AJAlsciXZUdeLV0i1cOQ97edercAfq1nvl/o3L9OTjiEbqRkXEMi54KVAAQpYxs1C7xZuHSthXnnDI24paEb5RTHrD7vj0j8zfewjbq8GSjYwpFlr9VdOYw/WYW+; Expires=Sun, 26 Jan 2025 08:36:53 GMT; Path=/; SameSite=None; Secure'), (b'Access-Control-Allow-Origin', b'*'), (b'Access-Control-Allow-Headers', b'Content-Type, Authorization, X-Requested-With, User-Agent, AssemblyAI-Agent'), (b'Access-Control-Allow-Methods', b'POST, PUT, GET, OPTIONS'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Etag', b'"2e65ee076d59279bedf2df2e9269ba0b1ee9dced"')])
+2025-01-19 03:36:55,124 - httpx - INFO - HTTP Request: GET https://api.assemblyai.com/v2/transcript/c9fdb170-bee5-48a5-837b-f0f4f8243184 "HTTP/1.1 200 OK"
+2025-01-19 03:36:55,124 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'GET']>
+2025-01-19 03:36:55,125 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-01-19 03:36:55,125 - httpcore.http11 - DEBUG - response_closed.started
+2025-01-19 03:36:55,125 - httpcore.http11 - DEBUG - response_closed.complete
+2025-01-19 03:36:58,127 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'GET']>
+2025-01-19 03:36:58,127 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-01-19 03:36:58,128 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'GET']>
+2025-01-19 03:36:58,128 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-01-19 03:36:58,128 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'GET']>
+2025-01-19 03:36:58,410 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Sun, 19 Jan 2025 08:36:56 GMT'), (b'Content-Type', b'application/json; charset=UTF-8'), (b'Content-Length', b'3106'), (b'Connection', b'keep-alive'), (b'Set-Cookie', b'AWSALBTG=ClWjrVPCX7uPzqI+/3yEfCdXOu8yAs/BrAh/FJweA+G9ZiqJshAuh8/C9CBtUSRxRo6UnurFYRLCAvmccSHklf9wCPLvAGIBtWK2SHi/2yLdWV8K2mxvRCUZxB0wunAsC7z+zD+LLpkrTTiUUK8qIJm/2U3or8Hbxdh5JIzI/IOZ; Expires=Sun, 26 Jan 2025 08:36:56 GMT; Path=/'), (b'Set-Cookie', b'AWSALBTGCORS=ClWjrVPCX7uPzqI+/3yEfCdXOu8yAs/BrAh/FJweA+G9ZiqJshAuh8/C9CBtUSRxRo6UnurFYRLCAvmccSHklf9wCPLvAGIBtWK2SHi/2yLdWV8K2mxvRCUZxB0wunAsC7z+zD+LLpkrTTiUUK8qIJm/2U3or8Hbxdh5JIzI/IOZ; Expires=Sun, 26 Jan 2025 08:36:56 GMT; Path=/; SameSite=None; Secure'), (b'Set-Cookie', b'AWSALB=VC4kyWeb9eBtKQJFYkE22vWi9AXiUSGttKaENHtdKriE6orBgBTxVTRQ/B3y+0qCPvAmZfRRPEEaWjN0etkTLFVdD2jp4nE+D871wqyIJNw6t+/UDeg/IhdQOGnK; Expires=Sun, 26 Jan 2025 08:36:56 GMT; Path=/'), (b'Set-Cookie', b'AWSALBCORS=VC4kyWeb9eBtKQJFYkE22vWi9AXiUSGttKaENHtdKriE6orBgBTxVTRQ/B3y+0qCPvAmZfRRPEEaWjN0etkTLFVdD2jp4nE+D871wqyIJNw6t+/UDeg/IhdQOGnK; Expires=Sun, 26 Jan 2025 08:36:56 GMT; Path=/; SameSite=None; Secure'), (b'Access-Control-Allow-Origin', b'*'), (b'Access-Control-Allow-Headers', b'Content-Type, Authorization, X-Requested-With, User-Agent, AssemblyAI-Agent'), (b'Access-Control-Allow-Methods', b'POST, PUT, GET, OPTIONS'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Etag', b'"7fda36c086efabc472d07461149c05b78b9a111c"')])
+2025-01-19 03:36:58,412 - httpx - INFO - HTTP Request: GET https://api.assemblyai.com/v2/transcript/c9fdb170-bee5-48a5-837b-f0f4f8243184 "HTTP/1.1 200 OK"
+2025-01-19 03:36:58,413 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'GET']>
+2025-01-19 03:36:58,413 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-01-19 03:36:58,413 - httpcore.http11 - DEBUG - response_closed.started
+2025-01-19 03:36:58,413 - httpcore.http11 - DEBUG - response_closed.complete
+2025-01-19 03:37:36,564 - python_multipart.multipart - DEBUG - Calling on_part_begin with no data
+2025-01-19 03:37:36,565 - python_multipart.multipart - DEBUG - Calling on_header_field with data[42:61]
+2025-01-19 03:37:36,565 - python_multipart.multipart - DEBUG - Calling on_header_value with data[63:112]
+2025-01-19 03:37:36,565 - python_multipart.multipart - DEBUG - Calling on_header_end with no data
+2025-01-19 03:37:36,565 - python_multipart.multipart - DEBUG - Calling on_header_field with data[114:126]
+2025-01-19 03:37:36,566 - python_multipart.multipart - DEBUG - Calling on_header_value with data[128:137]
+2025-01-19 03:37:36,566 - python_multipart.multipart - DEBUG - Calling on_header_end with no data
+2025-01-19 03:37:36,566 - python_multipart.multipart - DEBUG - Calling on_headers_finished with no data
+2025-01-19 03:37:36,567 - python_multipart.multipart - DEBUG - Calling on_part_data with data[141:262144]
+2025-01-19 03:37:36,567 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:262144]
+2025-01-19 03:37:36,567 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:225911]
+2025-01-19 03:37:36,569 - python_multipart.multipart - DEBUG - Calling on_part_end with no data
+2025-01-19 03:37:36,569 - python_multipart.multipart - DEBUG - Calling on_end with no data
+2025-01-19 03:37:36,569 - app.api.routes.analysis_routes - INFO - Received audio file for analysis: interview.wav
+2025-01-19 03:37:36,571 - app.api.routes.analysis_routes - INFO - Analyzing speech from temporary file: C:\Users\bewxt\AppData\Local\Temp\tmp_rmflcj4.wav
+2025-01-19 03:37:36,963 - httpcore.connection - DEBUG - connect_tcp.started host='api.assemblyai.com' port=443 local_address=None timeout=30.0 socket_options=None
+2025-01-19 03:37:37,077 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x0000015933A01280>
+2025-01-19 03:37:37,077 - httpcore.connection - DEBUG - start_tls.started ssl_context=<ssl.SSLContext object at 0x0000015936328B50> server_hostname='api.assemblyai.com' timeout=30.0
+2025-01-19 03:37:37,167 - httpcore.connection - DEBUG - start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x00000159362FD820>
+2025-01-19 03:37:37,167 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2025-01-19 03:37:37,169 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-01-19 03:37:37,169 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2025-01-19 03:37:39,521 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-01-19 03:37:39,522 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2025-01-19 03:37:39,684 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Sun, 19 Jan 2025 08:37:38 GMT'), (b'Content-Type', b'application/json'), (b'Content-Length', b'88'), (b'Connection', b'keep-alive'), (b'Set-Cookie', b'AWSALBTG=BrKOpjln+Za2wOyBWyVm4JnRA89h4Vn+HC+mkULW+zzFTVDEsn498DCT2+7LSVHpHAKFmTv94eSyEZVKv5My5BjCeZHUN3m3Qc6MtZFfPspmRFkw0osFnjcXGcEUYmFxS8I3GF0XOCExwcFzSM0GcfeEoz7cwXtmav2dQTJNLk51; Expires=Sun, 26 Jan 2025 08:37:35 GMT; Path=/'), (b'Set-Cookie', b'AWSALBTGCORS=BrKOpjln+Za2wOyBWyVm4JnRA89h4Vn+HC+mkULW+zzFTVDEsn498DCT2+7LSVHpHAKFmTv94eSyEZVKv5My5BjCeZHUN3m3Qc6MtZFfPspmRFkw0osFnjcXGcEUYmFxS8I3GF0XOCExwcFzSM0GcfeEoz7cwXtmav2dQTJNLk51; Expires=Sun, 26 Jan 2025 08:37:35 GMT; Path=/; SameSite=None; Secure'), (b'Access-Control-Allow-Headers', b'Content-Type, Authorization, X-Requested-With, User-Agent, AssemblyAI-Agent'), (b'Access-Control-Allow-Methods', b'POST, OPTIONS'), (b'Access-Control-Allow-Origin', b'*')])
+2025-01-19 03:37:39,687 - httpx - INFO - HTTP Request: POST https://api.assemblyai.com/v2/upload "HTTP/1.1 200 OK"
+2025-01-19 03:37:39,688 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2025-01-19 03:37:39,688 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-01-19 03:37:39,688 - httpcore.http11 - DEBUG - response_closed.started
+2025-01-19 03:37:39,689 - httpcore.http11 - DEBUG - response_closed.complete
+2025-01-19 03:37:39,690 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2025-01-19 03:37:39,690 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-01-19 03:37:39,691 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2025-01-19 03:37:39,691 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-01-19 03:37:39,691 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2025-01-19 03:37:39,988 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Sun, 19 Jan 2025 08:37:38 GMT'), (b'Content-Type', b'application/json; charset=UTF-8'), (b'Content-Length', b'1780'), (b'Connection', b'keep-alive'), (b'Set-Cookie', b'AWSALBTG=JyuqcejvhThfESPxhP2bbNaUUm2xhcKzug4qahe97RAAKTlz1/LQLPD4Ffq1xQuuHET2MjHtu6pwBElym8rHzTgqnYK2syw56b+bDQql+zYER3h1Qeh+Em7Zh02KFqYPnfudzwkX8/fKkuwFFgZwuu60RSXK/lXc9x1kEqWdKcQD; Expires=Sun, 26 Jan 2025 08:37:38 GMT; Path=/'), (b'Set-Cookie', b'AWSALBTGCORS=JyuqcejvhThfESPxhP2bbNaUUm2xhcKzug4qahe97RAAKTlz1/LQLPD4Ffq1xQuuHET2MjHtu6pwBElym8rHzTgqnYK2syw56b+bDQql+zYER3h1Qeh+Em7Zh02KFqYPnfudzwkX8/fKkuwFFgZwuu60RSXK/lXc9x1kEqWdKcQD; Expires=Sun, 26 Jan 2025 08:37:38 GMT; Path=/; SameSite=None; Secure'), (b'Set-Cookie', b'AWSALB=20JNY5XqXB1x1r/ZCulcCgDbdgWUC74BC81Y0693oHuGRX9zQ55FAQu1kDPmLVPW1HVy2KAI/LaCbN/FAKpUcTLsXM+LI1iqathm9XIAKJqBw1EWxe7MLBvhlGhi; Expires=Sun, 26 Jan 2025 08:37:38 GMT; Path=/'), (b'Set-Cookie', b'AWSALBCORS=20JNY5XqXB1x1r/ZCulcCgDbdgWUC74BC81Y0693oHuGRX9zQ55FAQu1kDPmLVPW1HVy2KAI/LaCbN/FAKpUcTLsXM+LI1iqathm9XIAKJqBw1EWxe7MLBvhlGhi; Expires=Sun, 26 Jan 2025 08:37:38 GMT; Path=/; SameSite=None; Secure'), (b'Access-Control-Allow-Origin', b'*'), (b'Access-Control-Allow-Headers', b'Content-Type, Authorization, X-Requested-With, User-Agent, AssemblyAI-Agent'), (b'Access-Control-Allow-Methods', b'POST, PUT, GET, OPTIONS'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload')])
+2025-01-19 03:37:39,990 - httpx - INFO - HTTP Request: POST https://api.assemblyai.com/v2/transcript "HTTP/1.1 200 OK"
+2025-01-19 03:37:39,992 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2025-01-19 03:37:39,992 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-01-19 03:37:39,992 - httpcore.http11 - DEBUG - response_closed.started
+2025-01-19 03:37:39,992 - httpcore.http11 - DEBUG - response_closed.complete
+2025-01-19 03:37:39,993 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'GET']>
+2025-01-19 03:37:39,994 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-01-19 03:37:39,994 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'GET']>
+2025-01-19 03:37:39,995 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-01-19 03:37:39,995 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'GET']>
+2025-01-19 03:37:40,147 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Sun, 19 Jan 2025 08:37:38 GMT'), (b'Content-Type', b'application/json; charset=UTF-8'), (b'Content-Length', b'1780'), (b'Connection', b'keep-alive'), (b'Set-Cookie', b'AWSALBTG=ovpPahax4E5Sl3IyaEbhOM/WGnKW3uCkr1kPpblXRdhkDTq3QazkhxPpESJHvY/XRUQ+0t3Q8uOxdIaXee2yEW9rdKgOa4P0yz1vcDpBSLrLvGQQWWc0g+6cMTLHt/6NdpfBCMfp4pyFzOnT1byI+78f7VWNA3ddHjfX0h5DecvY; Expires=Sun, 26 Jan 2025 08:37:38 GMT; Path=/'), (b'Set-Cookie', b'AWSALBTGCORS=ovpPahax4E5Sl3IyaEbhOM/WGnKW3uCkr1kPpblXRdhkDTq3QazkhxPpESJHvY/XRUQ+0t3Q8uOxdIaXee2yEW9rdKgOa4P0yz1vcDpBSLrLvGQQWWc0g+6cMTLHt/6NdpfBCMfp4pyFzOnT1byI+78f7VWNA3ddHjfX0h5DecvY; Expires=Sun, 26 Jan 2025 08:37:38 GMT; Path=/; SameSite=None; Secure'), (b'Set-Cookie', b'AWSALB=alBCBlb0lKNPwzvCcKMKKZizoH0+Jku+1rVrHl3snwwL57wbHbG4PKvKg185q8+a1+qCOTCt9lnVdqRn4UCf7Zy6qe81BlS2XARwN2Aisz3fqV+hc9Hw+3gJ+sTL; Expires=Sun, 26 Jan 2025 08:37:38 GMT; Path=/'), (b'Set-Cookie', b'AWSALBCORS=alBCBlb0lKNPwzvCcKMKKZizoH0+Jku+1rVrHl3snwwL57wbHbG4PKvKg185q8+a1+qCOTCt9lnVdqRn4UCf7Zy6qe81BlS2XARwN2Aisz3fqV+hc9Hw+3gJ+sTL; Expires=Sun, 26 Jan 2025 08:37:38 GMT; Path=/; SameSite=None; Secure'), (b'Access-Control-Allow-Origin', b'*'), (b'Access-Control-Allow-Headers', b'Content-Type, Authorization, X-Requested-With, User-Agent, AssemblyAI-Agent'), (b'Access-Control-Allow-Methods', b'POST, PUT, GET, OPTIONS'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Etag', b'"91af2bd062980fcb75d32b50d1d824cfef129fa4"')])
+2025-01-19 03:37:40,149 - httpx - INFO - HTTP Request: GET https://api.assemblyai.com/v2/transcript/608df645-1d41-4fe6-a040-8adc6166ed92 "HTTP/1.1 200 OK"
+2025-01-19 03:37:40,150 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'GET']>
+2025-01-19 03:37:40,150 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-01-19 03:37:40,150 - httpcore.http11 - DEBUG - response_closed.started
+2025-01-19 03:37:40,150 - httpcore.http11 - DEBUG - response_closed.complete
+2025-01-19 03:37:43,152 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'GET']>
+2025-01-19 03:37:43,152 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-01-19 03:37:43,152 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'GET']>
+2025-01-19 03:37:43,153 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-01-19 03:37:43,153 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'GET']>
+2025-01-19 03:37:43,312 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Sun, 19 Jan 2025 08:37:41 GMT'), (b'Content-Type', b'application/json; charset=UTF-8'), (b'Content-Length', b'1784'), (b'Connection', b'keep-alive'), (b'Set-Cookie', b'AWSALBTG=mI34pAs+H6cNG4HL5JNhjk5PjNPLIaOcjFk35bBBnpqtkHG5zmNRfsfAkkKmxE2NNbQ5GQukR2/wTJsp78BYbGVE7FbC0UzBc7kTkPLTWUwb4DjfKVb/7WWvaJvDeM7GxEwaOc8Nn3OjXI7p6J17ACjInCqWkdR4eQ8T4Ftvm0Vw; Expires=Sun, 26 Jan 2025 08:37:41 GMT; Path=/'), (b'Set-Cookie', b'AWSALBTGCORS=mI34pAs+H6cNG4HL5JNhjk5PjNPLIaOcjFk35bBBnpqtkHG5zmNRfsfAkkKmxE2NNbQ5GQukR2/wTJsp78BYbGVE7FbC0UzBc7kTkPLTWUwb4DjfKVb/7WWvaJvDeM7GxEwaOc8Nn3OjXI7p6J17ACjInCqWkdR4eQ8T4Ftvm0Vw; Expires=Sun, 26 Jan 2025 08:37:41 GMT; Path=/; SameSite=None; Secure'), (b'Set-Cookie', b'AWSALB=P98N/4wM3sURNcWnPt5375jK1O1Ik49p2NoJx0dBNn9sOY+/uiqYNNw+cK3Oj+kqCOi+6VM51f/7oSStyT2jmKTmOQn/iFq3NQFaRq9Msix6QCsd6jB/BDpZE8bG; Expires=Sun, 26 Jan 2025 08:37:41 GMT; Path=/'), (b'Set-Cookie', b'AWSALBCORS=P98N/4wM3sURNcWnPt5375jK1O1Ik49p2NoJx0dBNn9sOY+/uiqYNNw+cK3Oj+kqCOi+6VM51f/7oSStyT2jmKTmOQn/iFq3NQFaRq9Msix6QCsd6jB/BDpZE8bG; Expires=Sun, 26 Jan 2025 08:37:41 GMT; Path=/; SameSite=None; Secure'), (b'Access-Control-Allow-Origin', b'*'), (b'Access-Control-Allow-Headers', b'Content-Type, Authorization, X-Requested-With, User-Agent, AssemblyAI-Agent'), (b'Access-Control-Allow-Methods', b'POST, PUT, GET, OPTIONS'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Etag', b'"334313b2735e756e3ddc84432e43228ad687fe6d"')])
+2025-01-19 03:37:43,314 - httpx - INFO - HTTP Request: GET https://api.assemblyai.com/v2/transcript/608df645-1d41-4fe6-a040-8adc6166ed92 "HTTP/1.1 200 OK"
+2025-01-19 03:37:43,314 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'GET']>
+2025-01-19 03:37:43,314 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-01-19 03:37:43,315 - httpcore.http11 - DEBUG - response_closed.started
+2025-01-19 03:37:43,315 - httpcore.http11 - DEBUG - response_closed.complete
+2025-01-19 03:37:46,317 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'GET']>
+2025-01-19 03:37:46,317 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-01-19 03:37:46,318 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'GET']>
+2025-01-19 03:37:46,318 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-01-19 03:37:46,318 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'GET']>
+2025-01-19 03:37:46,473 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Sun, 19 Jan 2025 08:37:45 GMT'), (b'Content-Type', b'application/json; charset=UTF-8'), (b'Content-Length', b'1784'), (b'Connection', b'keep-alive'), (b'Set-Cookie', b'AWSALBTG=F1Wm0CsgN6Ql0hzQ6KD3hbUhE6JFiTp65ppUvF+w4/O122Jn3KJdl2vwgm8WfPV784zM5DVuiAZGrZtJwc4vyG09yefyxXzW+8mwhHd2smNt/FR1byjIcJRKvABbfH8u4Zs89zwtfJ3B9GbhDfi/knGsLtDvADT61Xt9Hd8nELnV; Expires=Sun, 26 Jan 2025 08:37:44 GMT; Path=/'), (b'Set-Cookie', b'AWSALBTGCORS=F1Wm0CsgN6Ql0hzQ6KD3hbUhE6JFiTp65ppUvF+w4/O122Jn3KJdl2vwgm8WfPV784zM5DVuiAZGrZtJwc4vyG09yefyxXzW+8mwhHd2smNt/FR1byjIcJRKvABbfH8u4Zs89zwtfJ3B9GbhDfi/knGsLtDvADT61Xt9Hd8nELnV; Expires=Sun, 26 Jan 2025 08:37:44 GMT; Path=/; SameSite=None; Secure'), (b'Set-Cookie', b'AWSALB=WuTL5fZnEjJ6pE43sJzXqbSczsh5dvNo65zeIxxTq+0DZDL/87VeCzjr+Wax2HIK8uP/SL8SPeKQ6MsdIanI5D70YmTf9mqSjfobOFYab4PjXGHp5m+XMKFJBgL/; Expires=Sun, 26 Jan 2025 08:37:44 GMT; Path=/'), (b'Set-Cookie', b'AWSALBCORS=WuTL5fZnEjJ6pE43sJzXqbSczsh5dvNo65zeIxxTq+0DZDL/87VeCzjr+Wax2HIK8uP/SL8SPeKQ6MsdIanI5D70YmTf9mqSjfobOFYab4PjXGHp5m+XMKFJBgL/; Expires=Sun, 26 Jan 2025 08:37:44 GMT; Path=/; SameSite=None; Secure'), (b'Access-Control-Allow-Origin', b'*'), (b'Access-Control-Allow-Headers', b'Content-Type, Authorization, X-Requested-With, User-Agent, AssemblyAI-Agent'), (b'Access-Control-Allow-Methods', b'POST, PUT, GET, OPTIONS'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Etag', b'"334313b2735e756e3ddc84432e43228ad687fe6d"')])
+2025-01-19 03:37:46,475 - httpx - INFO - HTTP Request: GET https://api.assemblyai.com/v2/transcript/608df645-1d41-4fe6-a040-8adc6166ed92 "HTTP/1.1 200 OK"
+2025-01-19 03:37:46,475 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'GET']>
+2025-01-19 03:37:46,477 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-01-19 03:37:46,477 - httpcore.http11 - DEBUG - response_closed.started
+2025-01-19 03:37:46,477 - httpcore.http11 - DEBUG - response_closed.complete
+2025-01-19 03:37:49,478 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'GET']>
+2025-01-19 03:37:49,479 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-01-19 03:37:49,479 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'GET']>
+2025-01-19 03:37:49,479 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-01-19 03:37:49,479 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'GET']>
+2025-01-19 03:37:50,083 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Sun, 19 Jan 2025 08:37:48 GMT'), (b'Content-Type', b'application/json; charset=UTF-8'), (b'Content-Length', b'2350'), (b'Connection', b'keep-alive'), (b'Set-Cookie', b'AWSALBTG=00UXaDOorpzpSb/cM3qWYAbXuArFnVn1HcZtuatoGSshoD1pk4Ygk31LYOA8XhbEtZ8U0SszLNMJxl3CkkEW0EX364RQKmrWAahqFsghmfW0VKfZ7u3iq+4J2CCr6Ui0tfJof2W0OEwAc8vMzVm7/Y3CymOaBoqT5GErwY6BlnQU; Expires=Sun, 26 Jan 2025 08:37:48 GMT; Path=/'), (b'Set-Cookie', b'AWSALBTGCORS=00UXaDOorpzpSb/cM3qWYAbXuArFnVn1HcZtuatoGSshoD1pk4Ygk31LYOA8XhbEtZ8U0SszLNMJxl3CkkEW0EX364RQKmrWAahqFsghmfW0VKfZ7u3iq+4J2CCr6Ui0tfJof2W0OEwAc8vMzVm7/Y3CymOaBoqT5GErwY6BlnQU; Expires=Sun, 26 Jan 2025 08:37:48 GMT; Path=/; SameSite=None; Secure'), (b'Set-Cookie', b'AWSALB=ZHKRM5+DG4cCW+YHAdqGa6ipXulvAYqr+ZsOpW/KZZJUTLZFsG9Epzz6LSCE3l57NHmXy/csJ/u/W58h/0vj7TRThiL6hpFSn/9a8wnk+EZshScLr/HO4tnbv2kM; Expires=Sun, 26 Jan 2025 08:37:48 GMT; Path=/'), (b'Set-Cookie', b'AWSALBCORS=ZHKRM5+DG4cCW+YHAdqGa6ipXulvAYqr+ZsOpW/KZZJUTLZFsG9Epzz6LSCE3l57NHmXy/csJ/u/W58h/0vj7TRThiL6hpFSn/9a8wnk+EZshScLr/HO4tnbv2kM; Expires=Sun, 26 Jan 2025 08:37:48 GMT; Path=/; SameSite=None; Secure'), (b'Access-Control-Allow-Origin', b'*'), (b'Access-Control-Allow-Headers', b'Content-Type, Authorization, X-Requested-With, User-Agent, AssemblyAI-Agent'), (b'Access-Control-Allow-Methods', b'POST, PUT, GET, OPTIONS'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Etag', b'"8b29a87f76affbd1a76ca01e7f4a1c2e954f539e"')])
+2025-01-19 03:37:50,086 - httpx - INFO - HTTP Request: GET https://api.assemblyai.com/v2/transcript/608df645-1d41-4fe6-a040-8adc6166ed92 "HTTP/1.1 200 OK"
+2025-01-19 03:37:50,086 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'GET']>
+2025-01-19 03:37:50,086 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-01-19 03:37:50,086 - httpcore.http11 - DEBUG - response_closed.started
+2025-01-19 03:37:50,087 - httpcore.http11 - DEBUG - response_closed.complete

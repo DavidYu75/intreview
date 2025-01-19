@@ -4,6 +4,7 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+import logging
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -27,15 +28,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Configure logging
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler('app.log')
+    ]
+)
+
 # Mount static files directory
 static_dir = Path(__file__).parent / "app" / "static"
 print(f"Static directory path: {static_dir}")
 app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
-# Include routers
+# Include routers in correct order
 app.include_router(auth_router, prefix="/auth", tags=["authentication"])
+app.include_router(analysis_router, tags=["analysis"])  # Add before session_router
 app.include_router(session_router, prefix="/api", tags=["sessions"])
-app.include_router(analysis_router, prefix="/api", tags=["analysis"])
 
 @app.get("/")
 async def root():

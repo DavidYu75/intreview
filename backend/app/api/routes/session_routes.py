@@ -1,4 +1,4 @@
-from fastapi import APIRouter, WebSocket, HTTPException, Depends
+from fastapi import APIRouter, WebSocket, HTTPException, Depends, UploadFile, File
 from typing import Dict, List
 import uuid
 from datetime import datetime
@@ -10,6 +10,8 @@ from app.db.models.analysis_models import AnalysisStorage
 from app.services.auth_service import AuthService
 from app.db.models.user_models import User
 from app.core.config import get_settings
+from ..routes.analysis_routes import analyze_speech
+import tempfile
 
 settings = get_settings()
 
@@ -210,35 +212,55 @@ async def get_session_history(
 @router.post("/sessions/{session_id}/end")
 async def end_session(
     session_id: str,
+    audio_file: UploadFile = File(...),
     current_user: User = Depends(auth_service.get_current_user)
 ):
-    """End an interview session"""
-    # Check if session exists and belongs to user
-    session = await recording_storage.db.recordings.find_one({
-        "session_id": session_id,
-        "user_id": current_user.id
-    })
-    
-    if not session:
-        raise HTTPException(
-            status_code=404,
-            detail="Session not found or access denied"
-        )
-    
-    # Update session status
-    await recording_storage.db.recordings.update_one(
-        {"session_id": session_id},
-        {
-            "$set": {
-                "status": "completed",
-                "end_time": datetime.utcnow()
+    """End an interview session and analyze the audio"""
+    try:
+        # First check if session exists and belongs to user
+        session = await recording_storage.db.recordings.find_one({
+            "session_id": session_id,
+            "user_id": current_user.id
+        })
+        
+        if not session:
+            raise HTTPException(
+                status_code=404,
+                detail="Session not found or access denied"
+            )
+        
+        # Analyze the audio
+        analysis_results = await analyze_speech(audio_file)
+        
+        # Update session with analysis results and end time
+        end_time = datetime.utcnow()
+        await recording_storage.db.recordings.update_one(
+            {"session_id": session_id},
+            {
+                "$set": {
+                    "status": "completed",
+                    "end_time": end_time,
+                    "analysis_results": analysis_results.dict()
+                }
             }
+        )
+        
+        # Update in-memory session data
+        if session_id in active_sessions:
+            active_sessions[session_id].update({
+                "status": "completed",
+                "end_time": end_time,
+                "analysis_results": analysis_results.dict()
+            })
+        
+        return {
+            "message": "Session ended successfully",
+            "analysis": analysis_results
         }
-    )
-    
-    # Update in-memory session data
-    if session_id in active_sessions:
-        active_sessions[session_id]["status"] = "completed"
-        active_sessions[session_id]["end_time"] = datetime.utcnow()
-    
-    return {"message": "Session ended successfully"}
+        
+    except Exception as e:
+        logger.error(f"Error ending session: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error ending session: {str(e)}"
+        )

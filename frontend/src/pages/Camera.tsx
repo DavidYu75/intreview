@@ -178,7 +178,7 @@ const CameraPage = () => {
 
         try {
           // Send to backend for analysis
-          const response = await fetch('http://localhost:8000/api/analyze', {
+          const response = await fetch('http://localhost:8000/analysis/speech', {
             method: 'POST',
             body: formData,
           });
