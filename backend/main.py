@@ -6,7 +6,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 app = FastAPI(
     title="Intreview API",
     description="Backend API for the Intreview application",
@@ -28,7 +27,6 @@ print(f"Static directory path: {static_dir}")  # Add this line to debug
 app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
 # Include routers
-
 @app.get("/")
 async def root():
     return {
