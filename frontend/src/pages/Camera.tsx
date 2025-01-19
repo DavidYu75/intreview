@@ -7,21 +7,37 @@ const CameraPage = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [time, setTime] = useState(0);
+  const [audioLevel, setAudioLevel] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     async function getMedia() {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+          video: true,
+          audio: true 
+        });
         streamRef.current = stream;
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
+
+        // Set up audio analysis
+        audioContextRef.current = new AudioContext();
+        analyserRef.current = audioContextRef.current.createAnalyser();
+        const source = audioContextRef.current.createMediaStreamSource(stream);
+        source.connect(analyserRef.current);
+        analyserRef.current.fftSize = 256;
+
+        // Start monitoring audio levels
+        monitorAudioLevel();
       } catch (err) {
-        console.error('Error accessing webcam: ', err);
+        console.error('Error accessing media devices: ', err);
       }
     }
 
@@ -34,8 +50,36 @@ const CameraPage = () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+      }
     };
   }, []);
+
+  const monitorAudioLevel = () => {
+    if (!analyserRef.current) return;
+
+    const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
+    const updateLevel = () => {
+      analyserRef.current?.getByteFrequencyData(dataArray);
+      const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
+      const normalizedLevel = average / 255; // 0 to 1
+      setAudioLevel(normalizedLevel);
+      
+      // Adjusted thresholds based on real speech test
+      if (normalizedLevel > 0.25) {
+        console.log('Loud volume detected:', normalizedLevel.toFixed(2));
+      } else if (normalizedLevel > 0.15) {
+        console.log('Normal volume detected:', normalizedLevel.toFixed(2));
+      } else if (normalizedLevel > 0.07) {
+        console.log('Low volume detected:', normalizedLevel.toFixed(2));
+      }
+
+      requestAnimationFrame(updateLevel);
+    };
+
+    updateLevel();
+  };
 
   const handleRecording = () => {
     if (isRecording) {
@@ -59,12 +103,18 @@ const CameraPage = () => {
     return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   };
 
+  const getBorderColor = (level: number) => {
+    if (level < 0.07) return 'border-transparent';
+    if (level < 0.15) return 'border-yellow-400';
+    return 'border-green-500';
+  };
+
   return (
     <div className="container">
       <div className="main-content">
         {/* Video Area */}
         <div className="video-section">
-          <div className="video-feed">
+          <div className={`video-feed ${getBorderColor(audioLevel)}`}>
             <video ref={videoRef} autoPlay className="video"></video>
             {isRecording && (
               <div className="recording-indicator">

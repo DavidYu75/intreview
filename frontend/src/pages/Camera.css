@@ -24,6 +24,22 @@
 .video-feed {
   @apply w-full bg-gray-100 rounded-lg overflow-hidden relative;
   height: calc(100% - 4rem);  /* Adjust height to account for controls */
+  border-width: 4px;
+  border-style: solid;
+  border-color: transparent;
+  transition: border-color 150ms ease;
+}
+
+.video-feed.border-transparent {
+  border-color: transparent;
+}
+
+.video-feed.border-yellow-400 {
+  border-color: #facc15;  /* Tailwind yellow-400 */
+}
+
+.video-feed.border-green-500 {
+  border-color: #22c55e;  /* Tailwind green-500 */
 }
 
 .video {
