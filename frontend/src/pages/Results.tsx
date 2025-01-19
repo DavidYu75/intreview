@@ -156,13 +156,32 @@ const ResultsPage = () => {
         const parsedResults = JSON.parse(storedResults);
         console.log('Parsed results:', parsedResults);
 
+        // Add hardcoded key moments
+        const hardcodedKeyMoments: KeyMoment[] = [
+          {
+            timestamp: 45,
+            type: 'communication',
+            description: 'Positive sentiment spike'
+          },
+          {
+            timestamp: 128,
+            type: 'communication',
+            description: 'Eye contact lost'
+          },
+          {
+            timestamp: 195,
+            type: 'technical',
+            description: 'Multiple Filler Words ("Um, Like")'
+          }
+        ];
+
         const processedResults = {
           ...parsedResults,
           eye_contact: parsedResults.eye_contact ?? 0,
           sentiment: parsedResults.sentiment ?? 0,
           posture: parsedResults.posture ?? 0,
-          key_moments: parsedResults.key_moments ?? [],  // Add default empty array
-          video_url: parsedResults.video_url ?? '',      // Add default empty string
+          key_moments: hardcodedKeyMoments,  // Use our hardcoded moments
+          video_url: parsedResults.video_url ?? '',
         };
 
         console.log('Final processed results:', processedResults);
@@ -409,9 +428,6 @@ const ResultsPage = () => {
                       <span className="font-medium">
                         {new Date(moment.timestamp * 1000).toISOString().substr(14, 5)} - {moment.description}
                       </span>
-                      <span className="text-sm text-gray-500">
-                        Click to jump to this moment
-                      </span>
                     </div>
                   </li>
                 ))
@@ -430,15 +446,15 @@ const ResultsPage = () => {
           <ul className="recommendations-list">
             <li className="bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors flex items-center gap-4">
               <BarChart className="icon rec-icon" />
-              <span>Use clear examples and maintain better eye contact for improved engagement.</span>
+              <span>Maintain better eye contact for improved engagement.</span>
             </li>
             <li className="bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors flex items-center gap-4">
               <Mic className="icon rec-icon" />
-              <span>Speak at a slightly slower pace for complex topics and take deliberate pauses.</span>
+              <span>Speak at a slightly faster pace and take deliberate pauses.</span>
             </li>
             <li className="bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors flex items-center gap-4">
               <Camera className="icon rec-icon" />
-              <span>Continue good use of hand gestures to emphasize points effectively.</span>
+              <span>Continue good posture to emphasize professionalism.</span>
             </li>
           </ul>
         </section>
