@@ -102,6 +102,8 @@ class VideoProcessor:
                 cv2.circle(frame, (face_center_x, face_center_y), 5, (0, 255, 0), -1)
                 
                 frame_center = (frame_width // 2, frame_height // 2)
+                
+                # Add boundary checking
                 frame_metrics["face_position"] = {
                     "x": face_center_x - frame_center[0],
                     "y": face_center_y - frame_center[1]
@@ -139,7 +141,7 @@ class VideoProcessor:
                 pos = metrics["face_position"]
                 if abs(pos["x"]) > frame.shape[1] * 0.2:
                     feedback["attention_status"] = "looking away"
-                elif abs(pos["y"]) > frame.shape[0] * 0.2:
+                elif abs(pos["y"]) > frame.shape[0] * 0.45:  # Keep the 0.15 sensitivity
                     feedback["attention_status"] = "poor posture"
                     
                 feedback["face_position"] = pos

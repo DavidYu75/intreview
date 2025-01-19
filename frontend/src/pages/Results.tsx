@@ -163,19 +163,19 @@ const ResultsPage = () => {
         // Add hardcoded key moments
         const hardcodedKeyMoments: KeyMoment[] = [
           {
-            timestamp: 45,
+            timestamp: 7,
             type: 'communication',
             description: 'Positive sentiment spike'
           },
           {
-            timestamp: 128,
+            timestamp: 14,
             type: 'communication',
             description: 'Eye contact lost'
           },
           {
-            timestamp: 195,
+            timestamp: 19,
             type: 'technical',
-            description: 'Multiple Filler Words ("Um, Like")'
+            description: 'Multiple Filler Words - ("Um, Like")'
           }
         ];
 
@@ -340,7 +340,7 @@ const ResultsPage = () => {
               </div>
               <div className="bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors">
                 <p className="metric-title">Content</p>
-                <p className="metric-value">100%</p>
+                <p className="metric-value">88%</p>
               </div>
             </div>
           </div>
@@ -440,7 +440,7 @@ const ResultsPage = () => {
                 controls
                 playsInline
               >
-                <source src={results.video_url} type="video/webm" />
+                <source src="/images/demo.mp4" type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
             </div>
