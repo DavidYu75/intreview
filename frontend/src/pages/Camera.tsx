@@ -360,12 +360,12 @@ const CameraPage = () => {
               <div className="metric">
                 <div className="metric-label">
                   <span>Posture</span>
-                  <span>{posture}</span>
+                  <span>{isRecording ? posture : "Good/Poor"}</span>
                 </div>
                 <div className="progress-bar">
                   <div
-                    className={`progress ${postureColor}`}
-                    style={{ width: postureWidth }}
+                    className={`progress ${isRecording ? postureColor : ''}`}
+                    style={{ width: isRecording ? postureWidth : '0%' }}
                   ></div>
                 </div>
               </div>
@@ -374,12 +374,12 @@ const CameraPage = () => {
               <div className="metric">
                 <div className="metric-label">
                   <span>Sentiment</span>
-                  <span>{sentiment}</span>
+                  <span>{isRecording ? sentiment : "Positive/Neutral"}</span>
                 </div>
                 <div className="progress-bar">
                   <div
-                    className={`progress ${sentimentColor}`}
-                    style={{ width: sentimentWidth }}
+                    className={`progress ${isRecording ? sentimentColor : ''}`}
+                    style={{ width: isRecording ? sentimentWidth : '0%' }}
                   ></div>
                 </div>
               </div>
@@ -388,12 +388,12 @@ const CameraPage = () => {
               <div className="metric">
                 <div className="metric-label">
                   <span>Eye Contact</span>
-                  <span>{eyeContactLabel}</span>
+                  <span>{isRecording ? eyeContactLabel : "Yes/No"}</span>
                 </div>
                 <div className="progress-bar">
                   <div
-                    className={`progress ${eyeContactColor}`}
-                    style={{ width: eyeContactWidth }}
+                    className={`progress ${isRecording ? eyeContactColor : ''}`}
+                    style={{ width: isRecording ? eyeContactWidth : '0%' }}
                   ></div>
                 </div>
               </div>
