@@ -102,8 +102,8 @@
                     <span class="metric-value" id="facePosition">Unknown</span>
                 </div>
                 <div class="metric">
-                    <span class="metric-label">Confidence:</span>
-                    <span class="metric-value" id="confidence">0.00</span>
+                    <span class="metric-label">Sentiment:</span>
+                    <span class="metric-value" id="sentiment">neutral</span>
                 </div>
                 <div class="metric">
                     <span class="metric-label">Frame Rate:</span>
@@ -159,10 +159,7 @@
                     `X: ${feedback.face_position.x.toFixed(0)}, Y: ${feedback.face_position.y.toFixed(0)}`;
             }
             
-            if (feedback.confidence) {
-                document.getElementById('confidence').textContent = 
-                    (parseFloat(feedback.confidence) * 100).toFixed(1) + '%';
-            }
+            document.getElementById('sentiment').textContent = feedback.sentiment || 'neutral';
         }
 
         async function startSession() {

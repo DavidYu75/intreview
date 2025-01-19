@@ -4,19 +4,6 @@ import mediapipe as mp
 from typing import Dict, List, Tuple, Optional
 from pydantic import BaseModel
 
-class PoseMetrics(BaseModel):
-    eye_contact_score: float = 0.0
-    posture_score: float = 0.0
-    movement_score: float = 0.0
-    gesture_count: int = 0
-    attention_zones: Dict[str, float] = {
-        "center": 0.0,
-        "left": 0.0,
-        "right": 0.0,
-        "up": 0.0,
-        "down": 0.0
-    }
-
 class VideoProcessor:
     def __init__(self):
         self.mp_face_mesh = mp.solutions.face_mesh
@@ -27,6 +14,46 @@ class VideoProcessor:
             min_detection_confidence=0.3,
             min_tracking_confidence=0.3
         )
+        
+        # Key landmark indices
+        # Mouth landmarks
+        self.left_mouth = 61   # Left corner of mouth
+        self.right_mouth = 291  # Right corner of mouth
+        self.top_mouth = 13    # Top of upper lip
+        self.bottom_mouth = 14  # Bottom of lower lip
+        
+        # Eyebrow landmarks
+        self.left_inner_brow = 46   # Inner point of left eyebrow
+        self.right_inner_brow = 276  # Inner point of right eyebrow
+        self.left_outer_brow = 55    # Outer point of left eyebrow
+        self.right_outer_brow = 285   # Outer point of right eyebrow
+        self.left_mid_brow = 52      # Middle of left eyebrow
+        self.right_mid_brow = 282    # Middle of right eyebrow
+        
+        # Points above eyebrows for reference
+        self.left_forehead = 71      # Point above left eyebrow
+        self.right_forehead = 301    # Point above right eyebrow
+        
+    def analyze_sentiment(self, landmarks) -> str:
+        try:
+            # Check smile first (mouth corners higher than center)
+            left = landmarks.landmark[self.left_mouth]
+            right = landmarks.landmark[self.right_mouth]
+            top = landmarks.landmark[self.top_mouth]
+            bottom = landmarks.landmark[self.bottom_mouth]
+            
+            mouth_corners_y = (left.y + right.y) / 2
+            mouth_center_y = (top.y + bottom.y) / 2
+            mouth_difference = mouth_corners_y - mouth_center_y
+            
+            # Determine sentiment
+            if mouth_difference < -0.007:  # Smiling
+                return "positive"
+            else:
+                return "neutral"
+            
+        except Exception:
+            return "neutral"
         
     async def process_frame(self, frame: np.ndarray) -> Tuple[np.ndarray, Dict]:
         try:
@@ -41,7 +68,7 @@ class VideoProcessor:
             frame_metrics = {
                 "face_detected": False,
                 "face_position": None,
-                "confidence": 0.0
+                "sentiment": "neutral"
             }
             
             if results.multi_face_landmarks:
@@ -68,9 +95,7 @@ class VideoProcessor:
                     "y": face_center_y - frame_center[1]
                 }
                 
-                confidences = [lm.visibility if hasattr(lm, 'visibility') else 1.0 
-                             for lm in face_landmarks.landmark]
-                frame_metrics["confidence"] = sum(confidences) / len(confidences)
+                frame_metrics["sentiment"] = self.analyze_sentiment(face_landmarks)
             
             return frame, frame_metrics
             
@@ -78,8 +103,7 @@ class VideoProcessor:
             return frame, {
                 "face_detected": False,
                 "face_position": None,
-                "confidence": 0.0,
-                "error": str(e)
+                "sentiment": "neutral"
             }
             
     async def get_realtime_feedback(self, frame: np.ndarray) -> Dict:
@@ -87,7 +111,8 @@ class VideoProcessor:
             if frame is None or frame.size == 0:
                 return {
                     "face_detected": False,
-                    "attention_status": "no valid frame"
+                    "attention_status": "no valid frame",
+                    "sentiment": "neutral"
                 }
 
             _, metrics = await self.process_frame(frame)
@@ -95,7 +120,7 @@ class VideoProcessor:
             feedback = {
                 "face_detected": metrics["face_detected"],
                 "attention_status": "centered",
-                "confidence": metrics.get("confidence", 0.0)
+                "sentiment": metrics["sentiment"]
             }
             
             if metrics["face_detected"] and metrics["face_position"]:
@@ -112,5 +137,6 @@ class VideoProcessor:
         except Exception as e:
             return {
                 "face_detected": False,
-                "attention_status": "error"
+                "attention_status": "error",
+                "sentiment": "neutral"
             }
