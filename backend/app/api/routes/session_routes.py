@@ -23,6 +23,21 @@ auth_service = AuthService(recording_storage.db)
 # In-memory storage for active sessions
 active_sessions: Dict[str, Dict] = {}
 
+# --- Non-authenticated endpoints --- #
+
+@router.websocket("/ws/video")
+async def websocket_video_endpoint(websocket: WebSocket):
+    """WebSocket endpoint for real-time video processing - No auth required"""
+    await handle_websocket(websocket)
+
+@router.post("/analyze")
+async def analyze_video():
+    """Endpoint for post-session analysis - No auth required"""
+    # Add your analysis logic here
+    return {"message": "Analysis complete"}
+
+# --- Authenticated endpoints --- #
+
 @router.post("/sessions/start")
 async def start_session(current_user: User = Depends(auth_service.get_current_user)):
     """Start a new interview session"""
@@ -44,15 +59,6 @@ async def start_session(current_user: User = Depends(auth_service.get_current_us
     })
     
     return {"session_id": session_id}
-
-@router.websocket("/ws/{session_id}")
-async def websocket_endpoint(websocket: WebSocket, session_id: str):
-    """WebSocket endpoint for real-time interview processing"""
-    if session_id not in active_sessions:
-        await websocket.close(code=4004, reason="Invalid session ID")
-        return
-        
-    await handle_websocket(websocket, session_id)
 
 @router.get("/sessions/{session_id}/analysis")
 async def get_session_analysis(
