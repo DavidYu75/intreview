@@ -95,7 +95,6 @@ const CameraPage = () => {
 
   const getBorderColor = (level: number) => {
     if (level < 0.05) return 'border-transparent';
-    if (level < 0.08) return 'border-yellow-400';
     return 'border-green-500';
   };
 
