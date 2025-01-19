@@ -102,14 +102,50 @@
 .progress.yellow {
   @apply bg-yellow-500 h-full rounded-full;
 }
+.progress.red {
+  @apply bg-red-500 h-full rounded-full;
+}
 .metric-value {
   @apply text-sm font-medium text-gray-600;
+}
+
+/* Progress Bar Enhancements */
+.progress-bar-container {
+  @apply relative w-full;
+}
+
+.ideal-pace-marker {
+  position: absolute;
+  top: -2px;
+  left: 50%;
+  height: calc(100% + 4px);
+  width: 2px;
+  background-color: #9CA3AF; /* Changed to gray-400 for softer appearance */
+  transform: translateX(-50%);
+  z-index: 1;
+  opacity: 0.6; /* Added slight transparency */
+}
+
+.progress-bar {
+  @apply relative bg-gray-200 rounded-full h-2;
+}
+
+.progress.red {
+  @apply bg-red-500 h-full rounded-full transition-all duration-300;
+}
+
+.progress.yellow {
+  @apply bg-yellow-500 h-full rounded-full transition-all duration-300;
+}
+
+.progress.green {
+  @apply bg-green-500 h-full rounded-full transition-all duration-300;
 }
 
 /* Key Moments */
 .key-moments-container {
   display: flex;
-  gap: 5rem;  /* reduced from 3rem */
+  gap: 2rem;
   align-items: center;
   justify-content: space-between;
 }
@@ -197,4 +233,46 @@
 
 .moments-list li:hover {
   background-color: transparent;
+}
+
+/* Transcript Section */
+.transcript {
+  @apply col-span-full;  /* Make transcript take full width */
+}
+
+.transcript-content {
+  min-height: 200px;
+  max-height: 400px;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+  overflow-y: auto;
+  color: #505050; /* Explicitly set to gray-800 for consistency */
+}
+
+.transcript-content p {
+  white-space: pre-wrap;
+  margin-bottom: 1em;
+}
+
+.transcript-content {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+}
+
+.transcript-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.transcript-content::-webkit-scrollbar-track {
+  @apply bg-gray-100 rounded-full;
+}
+
+.transcript-content::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded-full;
+}
+
+.transcript-content::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400;
 }

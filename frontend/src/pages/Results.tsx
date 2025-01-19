@@ -14,7 +14,69 @@ interface InterviewResults {
     timestamp: number;
     type: string;
   }>;
+  duration_minutes: number;
+  interview_date: string;
 }
+
+
+const getFillersScore = (fillerCount: number, durationMinutes: number) => {
+  if (durationMinutes === 0) return 100; // Avoid division by zero
+  
+  const fillersPerMinute = fillerCount / durationMinutes;
+
+  if (fillersPerMinute === 0) return 100; // Perfect case, no fillers
+  
+  if (fillersPerMinute <= 2) {
+    // Smoothly scale from 100 to 90 for FPM in [0, 2]
+    return 100 - (fillersPerMinute / 2) * 10;
+  }
+  
+  // Gradual decrease for FPM > 2
+  // Use exponential decay: max score 90, decaying towards 20
+  const adjustedFPM = fillersPerMinute - 2; // Offset to start decay after 2 FPM
+  return Math.max(20, 90 * Math.exp(-adjustedFPM / 5));
+};
+
+
+const getProgressColor = (percentage: number) => {
+  if (percentage < 40) return 'red';
+  if (percentage < 75) return 'yellow';
+  return 'green';
+};
+
+const getSpeakingPaceColor = (wpm: number) => {
+  const idealWPM = 150;
+  const deviation = Math.abs(wpm - idealWPM);
+  if (deviation > 50) return 'red';  // More than 50 WPM off from ideal
+  if (deviation > 25) return 'yellow';  // 25-50 WPM off from ideal
+  return 'green';  // Within 25 WPM of ideal
+};
+
+const getSpeakingPacePercentage = (wpm: number) => {
+  // Define the range (50 to 250 WPM is full scale)
+  const minWPM = 50;
+  const maxWPM = 250;
+  const range = maxWPM - minWPM;
+  
+  // Calculate percentage (150 WPM should be at 50%)
+  const percentage = ((wpm - minWPM) / range) * 100;
+  
+  // Clamp between 0 and 100
+  return Math.max(0, Math.min(100, percentage));
+};
+
+const formatDuration = (minutes: number) => {
+  if (minutes >= 1) {
+    const hours = Math.floor(minutes);
+    const remainingMinutes = Math.round((minutes % 1) * 60);
+    return hours > 0 
+      ? `${hours} hr ${remainingMinutes} min`
+      : `${Math.floor(minutes)} minutes`;
+  } else {
+    // Convert to seconds if less than 1 minute
+    return `${Math.round(minutes * 60)} seconds`;
+  }
+};
 
 const ResultsPage = () => {
   const [results, setResults] = useState<InterviewResults | null>(null);
@@ -31,6 +93,14 @@ const ResultsPage = () => {
     }
   }, [navigate]);
 
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
+
   if (isLoading || !results) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -42,6 +112,9 @@ const ResultsPage = () => {
     );
   }
 
+  // Calculate interview duration in minutes from the results
+  const durationMinutes = results.duration_minutes;
+
   return (
     <div className="results-container">
       {/* Header */}
@@ -52,7 +125,9 @@ const ResultsPage = () => {
         </button>
         <div className="header-info">
           <h1 className="title">Technical Interview Results</h1>
-          <p className="date">January 15, 2025 • 45 minutes</p>
+          <p className="date">
+            {formatDate(results.interview_date)} • {formatDuration(results.duration_minutes)}
+          </p>
         </div>
         <button className="download-button">
           <Download className="icon" />
@@ -116,24 +191,39 @@ const ResultsPage = () => {
             <div className="analysis-metrics">
               <div className="analysis-item bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors">
                 <p className="metric-title">Speaking Pace</p>
-                <div className="progress-bar">
-                  <div className="progress green" style={{ width: `${Math.min(100, (results.words_per_minute / 170) * 100)}%` }}></div>
+                <div className="progress-bar-container">
+                  <div className="progress-bar">
+                    <div 
+                      className={`progress ${getSpeakingPaceColor(results.words_per_minute)}`} 
+                      style={{ width: `${getSpeakingPacePercentage(results.words_per_minute)}%` }}
+                    ></div>
+                    <div className="ideal-pace-marker"></div>
+                  </div>
+                  <p className="metric-value">{Math.round(results.words_per_minute)} wpm</p>
                 </div>
-                <p className="metric-value">{Math.round(results.words_per_minute)} wpm</p>
               </div>
               <div className="analysis-item bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors">
                 <p className="metric-title">Filler Words</p>
                 <div className="progress-bar">
-                  <div className="progress yellow" style={{ width: '60%' }}></div>
+                  <div 
+                    className={`progress ${getProgressColor(getFillersScore(results.filler_word_count, durationMinutes))}`} 
+                    style={{ width: `${getFillersScore(results.filler_word_count, durationMinutes)}%` }}
+                  ></div>
                 </div>
-                <p className="metric-value">12 instances</p>
+                <p className="metric-value">
+                  {results.filler_word_count} instances 
+                  ({(results.filler_word_count / durationMinutes).toFixed(1)} per minute)
+                </p>
               </div>
               <div className="analysis-item bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors">
                 <p className="metric-title">Speech Intelligibility</p>
                 <div className="progress-bar">
-                  <div className="progress green" style={{ width: '90%' }}></div>
+                  <div 
+                    className="progress green" 
+                    style={{ width: `${Math.round(results.speech_intelligibility * 100)}%` }}
+                  ></div>
                 </div>
-                <p className="metric-value">92%</p>
+                <p className="metric-value">{Math.round(results.speech_intelligibility * 100)}%</p>
               </div>
             </div>
           </section>
@@ -214,6 +304,16 @@ const ResultsPage = () => {
               <span>Continue good use of hand gestures to emphasize points effectively.</span>
             </li>
           </ul>
+        </section>
+
+        {/* Interview Transcript (Now fullwidth and after recommendations) */}
+        <section className="transcript section-card">
+          <h2 className="section-title">Interview Transcript</h2>
+          <div className="transcript-content bg-slate-50 p-6 rounded-lg">
+            <p className="text-gray-800">  {/* Changed from text-gray-700 to text-gray-800 for better contrast */}
+              {results.raw_transcript}
+            </p>
+          </div>
         </section>
       </main>
     </div>

@@ -22,19 +22,28 @@ const CameraPage = () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ 
           video: true,
-          audio: true 
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: false, // Disable automatic gain control
+            sampleRate: 48000 // Higher sample rate for better quality
+          }
         });
+        
         streamRef.current = stream;
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
+          // Prevent audio feedback
+          videoRef.current.muted = true;
         }
 
-        // Set up audio analysis and recording
+        // Set up audio analysis
         audioContextRef.current = new AudioContext();
         analyserRef.current = audioContextRef.current.createAnalyser();
         const source = audioContextRef.current.createMediaStreamSource(stream);
         source.connect(analyserRef.current);
-        analyserRef.current.fftSize = 256;
+        // Don't connect to audio destination to prevent feedback
+        // source.connect(audioContextRef.current.destination);
 
         // Set up MediaRecorder
         mediaRecorderRef.current = new MediaRecorder(stream);
@@ -83,11 +92,11 @@ const CameraPage = () => {
 
   const handleRecording = async () => {
     if (isRecording) {
+      // Stop recording
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
       
-      // Stop recording and process audio
       if (mediaRecorderRef.current) {
         mediaRecorderRef.current.stop();
         await new Promise(resolve => {
@@ -96,7 +105,15 @@ const CameraPage = () => {
           }
         });
 
-        // Create audio file from chunks
+        // Stop all tracks and clear video
+        if (streamRef.current) {
+          streamRef.current.getTracks().forEach(track => track.stop());
+        }
+        if (videoRef.current) {
+          videoRef.current.srcObject = null;
+        }
+
+        // Create audio file and send to backend
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
         const formData = new FormData();
         formData.append('audio', audioBlob, 'interview.wav');
@@ -110,7 +127,6 @@ const CameraPage = () => {
 
           if (response.ok) {
             const results = await response.json();
-            // Store results in localStorage or state management
             localStorage.setItem('interviewResults', JSON.stringify(results));
             navigate('/results');
           }

@@ -1,7 +1,11 @@
 from fastapi import APIRouter, UploadFile, File
 from ..services.speech_analyzer import SpeechAnalyzer
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/api",
+    tags=["analysis"]
+)
+
 analyzer = SpeechAnalyzer()
 
 @router.post("/analyze")
