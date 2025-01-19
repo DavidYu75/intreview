@@ -8,6 +8,10 @@ const CameraPage = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [time, setTime] = useState(0);
   const [audioLevel, setAudioLevel] = useState(0);
+  const [posture, setPosture] = useState<string>('Normal');
+  const [sentiment, setSentiment] = useState<string>('Neutral');
+  const [eyeContact, setEyeContact] = useState<number>(0);
+  const [ws, setWs] = useState<WebSocket | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -71,6 +75,44 @@ const CameraPage = () => {
       }
       if (audioContextRef.current) {
         audioContextRef.current.close();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const newWs = new WebSocket('ws://localhost:8000/api/ws/video');
+    
+    newWs.onopen = () => {
+      console.log('WebSocket Connected');
+    };
+    
+    newWs.onmessage = (evt) => {
+      try {
+        const data = JSON.parse(evt.data);
+        if (data.type === 'video_feedback') {
+          const feedback = data.feedback;
+          setPosture(feedback.attention_status === 'poor posture' ? 'Poor' : 'Good');
+          setSentiment(feedback.sentiment.charAt(0).toUpperCase() + feedback.sentiment.slice(1));
+          setEyeContact(feedback.attention_status === 'centered' ? 100 : 50);
+        }
+      } catch (error) {
+        console.error('WebSocket message error:', error);
+      }
+    };
+    
+    newWs.onerror = (error) => {
+      console.error('WebSocket Error:', error);
+    };
+    
+    newWs.onclose = (event) => {
+      console.log('WebSocket Closed:', event.code, event.reason);
+    };
+    
+    setWs(newWs);
+
+    return () => {
+      if (newWs.readyState === WebSocket.OPEN) {
+        newWs.close();
       }
     };
   }, []);
@@ -148,6 +190,26 @@ const CameraPage = () => {
     setIsRecording(!isRecording);
   };
 
+  const sendVideoFrames = () => {
+    if (!isRecording || !ws || ws.readyState !== WebSocket.OPEN) return;
+    if (!videoRef.current) return;
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = videoRef.current.videoWidth;
+    canvas.height = videoRef.current.videoHeight;
+    ctx?.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+    const frameData = canvas.toDataURL('image/jpeg', 0.6);
+    ws.send(JSON.stringify({ type: 'video', frame: frameData.split(',')[1] }));
+    requestAnimationFrame(sendVideoFrames);
+  };
+
+  useEffect(() => {
+    if (isRecording) {
+      requestAnimationFrame(sendVideoFrames);
+    }
+  }, [isRecording, ws]);
+
   const handleMute = () => {
     if (streamRef.current) {
       const isCurrentlyMuted = isMuted;
@@ -220,29 +282,38 @@ const CameraPage = () => {
             <div className="feedback-metrics">
               <div className="metric">
                 <div className="metric-label">
-                  <span>Speaking Pace</span>
-                  <span>145 wpm</span>
+                  <span>Posture</span>
+                  <span>{posture}</span>
                 </div>
                 <div className="progress-bar">
-                  <div className="progress-bar-fill" style={{ width: '80%' }}></div>
+                  <div 
+                    className="progress-bar-fill" 
+                    style={{ width: posture === 'Good' ? '80%' : '40%' }}
+                  ></div>
+                </div>
+              </div>
+              <div className="metric">
+                <div className="metric-label">
+                  <span>Sentiment</span>
+                  <span>{sentiment}</span>
+                </div>
+                <div className="progress-bar">
+                  <div
+                    className="progress-bar-fill"
+                    style={{ width: sentiment === 'Positive' ? '75%' : '50%' }}
+                  ></div>
                 </div>
               </div>
               <div className="metric">
                 <div className="metric-label">
                   <span>Eye Contact</span>
-                  <span>Good</span>
+                  <span>{eyeContact}%</span>
                 </div>
                 <div className="progress-bar">
-                  <div className="progress-bar-fill" style={{ width: '75%' }}></div>
-                </div>
-              </div>
-              <div className="metric">
-                <div className="metric-label">
-                  <span>Voice Clarity</span>
-                  <span>Clear</span>
-                </div>
-                <div className="progress-bar">
-                  <div className="progress-bar-fill" style={{ width: '90%' }}></div>
+                  <div
+                    className="progress-bar-fill"
+                    style={{ width: `${eyeContact}%` }}
+                  ></div>
                 </div>
               </div>
             </div>
