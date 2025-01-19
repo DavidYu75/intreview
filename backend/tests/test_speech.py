@@ -128,22 +128,6 @@ async def test_speech_analysis():
                 word_position = filler['timestamp'] + 1
                 print(f"• {filler['word']} (starting at word #{word_position})")
         
-        print("\nSentiment Analysis Examples")
-        print("---------------------------")
-        # Define test_texts here
-        example_texts = [
-            "I feel very confident about this interview opportunity",
-            "I'm worried about making mistakes in the interview",
-            "The interview was okay, nothing special"
-        ]
-        
-        for test_text in example_texts:
-            sentiment = await analyzer.analyze_sentiment(test_text)
-            print(f"\nText: {test_text}")
-            print(f"Sentiment: {sentiment['overall_sentiment']}")
-            print(f"Confidence: {sentiment['confidence']:.0%}")
-            print(f"• Based on {sentiment['overall_sentiment'].lower()} word frequency in response")
-        
     except ValueError as e:
         print(f"\nConfiguration Error: {str(e)}")
         print("Please make sure you have set the ASSEMBLY_AI_API_KEY in your .env file")
