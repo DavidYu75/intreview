@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     JWT_SECRET_KEY: str = "your-secret-key"  # Change this in production
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    ASSEMBLY_AI_API_KEY: str
 
     class Config:
         env_file = ".env"
