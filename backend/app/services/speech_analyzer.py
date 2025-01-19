@@ -3,6 +3,7 @@ from typing import Dict, List, Optional, Any
 from pydantic import BaseModel
 import os
 from dotenv import load_dotenv
+import math
 
 # Load environment variables
 load_dotenv()
@@ -10,31 +11,35 @@ load_dotenv()
 class SpeechMetrics(BaseModel):
     words_per_minute: float = 0.0
     filler_word_count: int = 0
-    clarity_score: float = 0.0
+    speech_intelligibility: float = 0.0  # Renamed from clarity_score
+    pronunciation_accuracy: float = 0.0  # Placeholder for phoneme-based scoring
+    articulation_enunciation: float = 0.0  # Placeholder for articulation analysis
+    silent_pause_ratio: float = 0.0  # Placeholder for silent pause ratio
+    speech_intelligibility_score: float = 0.0  # New integrated metric
     confidence_scores: List[float] = []
     confidence: float = 0.0
     low_confidence_segments: List[Dict[str, Any]] = []  # Added for tracking problematic segments
     segment_confidences: List[Dict[str, Any]] = []  # Added for sentence-level confidence
-    overall_quality_score: float = 0.0  # Added composite score
+    filler_words: List[Dict[str, Any]] = []  # Added missing attribute
     words: List[str] = []
     raw_transcript: str = ""
-    
+
 class SpeechAnalyzer:
     def __init__(self):
         api_key = os.getenv('ASSEMBLY_AI_API_KEY')
         if not api_key:
             raise ValueError("ASSEMBLY_AI_API_KEY not found in environment variables")
-            
+
         # Set the API key globally for the aai client
         aai.settings.api_key = api_key
-        
+
         # Single-word fillers
         self.single_word_fillers = {
-            "um", "umm", "uh", "uhh", "ah", "ahh", "er", "erm", 
+            "um", "umm", "uh", "uhh", "ah", "ahh", "er", "erm",
             "like", "basically", "literally", "actually", "anyway",
             "well", "so", "just", "maybe", "whatever", "yeah"
         }
-        
+
         # Multi-word fillers (as tuples to maintain word order)
         self.multi_word_fillers = [
             ("you", "know"),
@@ -45,11 +50,11 @@ class SpeechAnalyzer:
             ("you", "see"),
             ("pretty", "much")
         ]
-    
+
     def clean_word(self, word: str) -> str:
         """Remove punctuation and convert to lowercase"""
         return ''.join(c for c in word.lower() if c.isalnum() or c.isspace())
-    
+
     def find_filler_phrases(self, words: List[str]) -> List[Dict[str, Any]]:
         """Find both single-word and multi-word filler phrases in the text"""
         filler_words = []
@@ -57,7 +62,7 @@ class SpeechAnalyzer:
         while i < len(words):
             # Clean the current word
             clean_word = self.clean_word(words[i])
-            
+
             # Check for single-word fillers
             if clean_word in self.single_word_fillers:
                 filler_words.append({
@@ -67,7 +72,7 @@ class SpeechAnalyzer:
                 })
                 i += 1
                 continue
-            
+
             # Check for multi-word fillers
             for filler_phrase in self.multi_word_fillers:
                 if i + len(filler_phrase) <= len(words):
@@ -83,8 +88,56 @@ class SpeechAnalyzer:
                         break
             else:
                 i += 1
-        
+
         return filler_words
+
+    def calculate_weighted_confidence(self, confidence_scores: List[float], word_durations: List[float]) -> float:
+        """
+        Calculate weighted confidence based on:
+        - Word duration (longer words have more impact)
+        - Confidence thresholds:
+          * Words below 60% confidence get extra penalty
+          * Penalty is dampened by 50% to avoid over-penalization
+        - Returns weighted average considering word importance by duration
+        """
+        total_duration = sum(word_durations)
+        if total_duration == 0:
+            return 1.0  # Perfect confidence if no words
+
+        weighted_sum = 0
+        total_weight = 0
+
+        for confidence, duration in zip(confidence_scores, word_durations):
+            weight = duration / total_duration
+            if confidence < 0.6:  # Low confidence threshold
+                penalty = 1 - confidence  # Penalize based on how low the confidence is
+                dampened_penalty = penalty * 0.5  # Dampening factor for small mistakes
+                weighted_sum += (confidence - dampened_penalty) * weight
+            else:
+                weighted_sum += confidence * weight
+            total_weight += weight
+
+        return weighted_sum / total_weight
+
+    def calculate_speech_intelligibility(self, confidence_scores: List[float], filler_word_ratio: float) -> float:
+        """
+        Calculate speech intelligibility score based on:
+        - Base confidence from word-level accuracy
+        - Filler word penalties:
+          * Light penalty (0.5x) for filler ratio under 15%
+          * Heavy penalty (squared) for filler ratio over 15%
+        - Maintains minimum score of 50% to avoid discouragement
+        """
+        base_score = sum(confidence_scores) / len(confidence_scores) if confidence_scores else 1.0
+
+        # Penalize filler word ratio non-linearly
+        if filler_word_ratio > 0.15:  # Threshold for "excessive"
+            filler_penalty = filler_word_ratio ** 2  # Quadratic penalty
+        else:
+            filler_penalty = filler_word_ratio * 0.5  # Reduced penalty for minor filler usage
+
+        # Final intelligibility score
+        return max(base_score - filler_penalty, 0.5)  # Ensure a floor to prevent overly discouraging scores
 
     async def analyze_speech(self, audio_file) -> SpeechMetrics:
         """
@@ -103,19 +156,16 @@ class SpeechAnalyzer:
                 format_text=False,
                 disfluencies=True
             )
-            
+
             # Create transcriber and transcribe the file
             transcriber = aai.Transcriber()
-            transcript = transcriber.transcribe(
-                audio_file,
-                config=config
-            )
-            
+            transcript = transcriber.transcribe(audio_file, config=config)
+
             words = [word.text for word in transcript.words]
-            
+
             # Find filler words and phrases
             filler_words = self.find_filler_phrases(words)
-            
+
             # Calculate words per minute
             duration_minutes = transcript.audio_duration / 60
             word_count = len(transcript.words)
@@ -124,9 +174,8 @@ class SpeechAnalyzer:
             # Extract detailed confidence metrics
             confidence_scores = [word.confidence for word in transcript.words]
             word_durations = [word.end - word.start for word in transcript.words]
-            total_duration = sum(word_durations)
 
-            # Track low confidence segments (words below 0.4 confidence)
+            # Identify low confidence segments
             low_confidence_segments = [
                 {
                     "word": word.text,
@@ -134,46 +183,26 @@ class SpeechAnalyzer:
                     "timestamp": word.start,
                     "duration": word.end - word.start
                 }
-                for word in transcript.words
-                if word.confidence < 0.4
+                for word in transcript.words if word.confidence < 0.4
             ]
 
-            # Calculate segment-level confidence (by sentences or phrases)
-            segments = transcript.utterances if hasattr(transcript, 'utterances') else [transcript]
-            segment_confidences = [
-                {
-                    "text": seg.text,
-                    "confidence": sum(w.confidence for w in seg.words) / len(seg.words) if seg.words else 0,
-                    "start_time": seg.start,
-                    "end_time": seg.end
-                }
-                for seg in segments
-            ]
-
-            # Calculate weighted average confidence based on word duration
-            weighted_confidence = sum(
-                score * duration / total_duration
-                for score, duration in zip(confidence_scores, word_durations)
-            ) if total_duration > 0 else 0
-
-            # Calculate overall quality score (composite metric)
-            clarity_score = sum(confidence_scores) / len(confidence_scores) if confidence_scores else 0
-            filler_word_ratio = len(filler_words) / len(words) if words else 1
-            overall_quality = (
-                weighted_confidence * 0.4 +  # Weight for transcription confidence
-                clarity_score * 0.4 +        # Weight for pronunciation clarity
-                (1 - filler_word_ratio) * 0.2  # Weight for speech fluency
-            )
+            # Calculate metrics
+            weighted_confidence = self.calculate_weighted_confidence(confidence_scores, word_durations)
+            filler_word_ratio = len(filler_words) / len(words) if words else 0
+            speech_intelligibility = self.calculate_speech_intelligibility(confidence_scores, filler_word_ratio)
 
             return SpeechMetrics(
                 words_per_minute=wpm,
                 filler_word_count=len(filler_words),
-                clarity_score=clarity_score,
+                speech_intelligibility=speech_intelligibility,
+                pronunciation_accuracy=0.0,  # Placeholder
+                articulation_enunciation=0.0,  # Placeholder
+                silent_pause_ratio=0.0,  # Placeholder
+                speech_intelligibility_score=speech_intelligibility,
                 confidence_scores=confidence_scores,
                 confidence=weighted_confidence,
                 low_confidence_segments=low_confidence_segments,
-                segment_confidences=segment_confidences,
-                overall_quality_score=overall_quality,
+                segment_confidences=[],  # Placeholder for future implementation
                 filler_words=filler_words,
                 raw_transcript=transcript.text,
                 words=words
@@ -181,7 +210,7 @@ class SpeechAnalyzer:
 
         except Exception as e:
             raise Exception(f"Speech analysis failed: {str(e)}")
-    
+
     async def analyze_sentiment(self, text: str) -> Dict:
         """
         Analyze the emotional tone and sentiment of the speech
@@ -203,10 +232,10 @@ class SpeechAnalyzer:
                 'okay', 'ok', 'fine', 'normal', 'average', 'regular', 'standard', 'usual',
                 'typical', 'moderate', 'fair', 'nothing special'
             }
-            
+
             text_lower = text.lower()
             words = text_lower.split()
-            
+
             # Check for neutral phrases first
             if any(phrase in text_lower for phrase in neutral_words):
                 return {
@@ -214,10 +243,10 @@ class SpeechAnalyzer:
                     "overall_sentiment": "NEUTRAL",
                     "confidence": 0.5
                 }
-            
+
             positive_count = sum(1 for word in words if word in positive_words)
             negative_count = sum(1 for word in words if word in negative_words)
-            
+
             if positive_count > negative_count:
                 sentiment = "POSITIVE"
                 confidence = positive_count / len(words)
@@ -227,7 +256,7 @@ class SpeechAnalyzer:
             else:
                 sentiment = "NEUTRAL"
                 confidence = 0.3  # Base confidence for neutral sentiment
-            
+
             return {
                 "text": text,
                 "overall_sentiment": sentiment,
@@ -249,12 +278,12 @@ class SpeechAnalyzer:
                     speech_threshold=0.2
                 )
             )
-            
+
             return {
                 "text": transcript.text,
                 "is_filler_word": any(word in transcript.text.lower() for word in self.filler_words),
                 "confidence": transcript.confidence if hasattr(transcript, 'confidence') else None
             }
-            
+
         except Exception as e:
             raise Exception(f"Real-time analysis failed: {str(e)}")

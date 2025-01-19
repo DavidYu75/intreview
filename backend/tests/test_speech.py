@@ -90,10 +90,19 @@ async def test_speech_analysis():
         print("Analysis Results")
         print("----------------")
         print(f"Speaking Rate: {metrics.words_per_minute:.0f} words per minute")
+        print(f"• {'Optimal' if 130 <= metrics.words_per_minute <= 170 else 'Too slow' if metrics.words_per_minute < 130 else 'Too fast'}")
+        print(f"• Ideal range: 130-170 wpm for clear communication\n")
+
         print(f"Overall Confidence: {metrics.confidence:.1%}")
-        print(f"Speech Clarity: {metrics.clarity_score:.1%}")
-        print(f"Quality Score: {metrics.overall_quality_score:.1%}")
+        print(f"• Based on pronunciation accuracy and word timing")
+        print(f"• Words below 60% confidence: {len([s for s in metrics.confidence_scores if s < 0.6])}\n")
+
+        print(f"Speech Intelligibility: {metrics.speech_intelligibility:.1%}")
+        print(f"• Clarity of speech considering filler words and pronunciation")
+        print(f"• Filler word ratio: {len(metrics.filler_words)/len(metrics.words):.1%}\n")
+
         print(f"Total Filler Words: {metrics.filler_word_count}")
+        print(f"• Impact on fluency: {'Low' if metrics.filler_word_count < 5 else 'Moderate' if metrics.filler_word_count < 10 else 'High'}")
         
         if metrics.low_confidence_segments:
             print("\nLow Confidence Segments")
@@ -121,17 +130,19 @@ async def test_speech_analysis():
         
         print("\nSentiment Analysis Examples")
         print("---------------------------")
-        test_texts = [
+        # Define test_texts here
+        example_texts = [
             "I feel very confident about this interview opportunity",
             "I'm worried about making mistakes in the interview",
             "The interview was okay, nothing special"
         ]
         
-        for test_text in test_texts:
+        for test_text in example_texts:
             sentiment = await analyzer.analyze_sentiment(test_text)
             print(f"\nText: {test_text}")
             print(f"Sentiment: {sentiment['overall_sentiment']}")
             print(f"Confidence: {sentiment['confidence']:.0%}")
+            print(f"• Based on {sentiment['overall_sentiment'].lower()} word frequency in response")
         
     except ValueError as e:
         print(f"\nConfiguration Error: {str(e)}")
