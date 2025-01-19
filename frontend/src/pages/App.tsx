@@ -6,16 +6,19 @@ function App() {
 
   return (
     <>
-       <div className="logo-main">
-         <img 
-           src="../public/images/logov2.svg" 
-           alt="Intreview" 
-           className="h-10 w-auto"
+      <div className="logo-main">
+        <img 
+          src="../public/images/logov2.svg" 
+          alt="Intreview" 
+          className="h-10 w-auto"
         />
       </div>
-      <button onClick={() => navigate('/camera')} className="new-intreview-button">
-        New Intreview
-      </button>
+      <h1 className="welcome-text">Welcome Back! David</h1>
+      <div className="button-container">
+        <button onClick={() => navigate('/camera')} className="new-intreview-button">
+          New Intreview
+        </button>
+      </div>
     </>
   );
 }

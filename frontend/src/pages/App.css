@@ -1,3 +1,8 @@
+@font-face {
+  font-family: 'Evoria';
+  src: url('../public/fonts/evoria-font/EvoriaRegular-3z5Y6.ttf') format('truetype');
+}
+
 #root {
   @apply w-full h-full m-0 p-0;
   text-align: center;
@@ -7,8 +12,18 @@
   @apply flex justify-center items-center w-full mt-8;
 }
 
+.welcome-text {
+  @apply text-6xl font-bold text-gray-900 mt-40;
+  font-family: 'Evoria', system-ui, sans-serif;
+}
+
+.button-container {
+  @apply fixed bottom-0 left-0 right-0 mb-20 flex justify-center;
+}
+
 .new-intreview-button {
-  @apply p-2;
+  @apply p-4 px-8 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-xl mb-20;
+  font-family: 'Evoria', system-ui, sans-serif;
 }
 
 .logo {

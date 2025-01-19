@@ -35,9 +35,14 @@
 }
 
 .logo-container {
-  @apply flex items-center;
+  @apply flex items-center ml-4;
 }
 
 .logo-container img {
   @apply h-10 w-auto object-contain;  /* Changed from h-8 to h-10 */
+}
+
+.profile-circle {
+  @apply w-10 h-10 rounded-full mr-4;
+  border: 2px solid #e5e7eb;
 }

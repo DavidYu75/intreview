@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mic, Volume2 } from 'lucide-react';
+import { Mic, Volume2, RotateCw } from 'lucide-react';
 import LoadingContext from '../contexts/LoadingContext';
 import './Camera.css';
+import { behavioralQuestions } from '../data/interviewQuestions';
 
 const CameraPage = () => {
   const [isRecording, setIsRecording] = useState(false);
@@ -10,6 +11,7 @@ const CameraPage = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [time, setTime] = useState(0);
   const [audioLevel, setAudioLevel] = useState(0);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   // Posture can be "Good" or "Poor"
   const [posture, setPosture] = useState<string>('Normal');
@@ -298,6 +300,13 @@ const CameraPage = () => {
     }
   };
 
+  // -- Rotate Question --
+  const rotateQuestion = () => {
+    setCurrentQuestionIndex((prev) => 
+      (prev + 1) % behavioralQuestions.length
+    );
+  };
+
   // -- Helpers --
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -379,9 +388,16 @@ const CameraPage = () => {
           <div className="header-divider"></div>
 
           <h3 className="panel-header">Current Question</h3>
-          <div className="panel-section">
-            <p>
-              Can you explain a challenging technical problem you've solved and walk me through your problem-solving approach?
+          <div className="panel-section relative">
+            <button 
+              onClick={rotateQuestion}
+              className="rotateqButton"
+              title="Next question"
+            >
+              <RotateCw size={12} />
+            </button>
+            <p className="pl-10">
+              {behavioralQuestions[currentQuestionIndex]}
             </p>
           </div>
 

@@ -104,6 +104,9 @@
   overflow-y: auto;
 }
 
+.rotateqButton {
+  @apply bg-indigo-600 text-white rounded-lg px-4 py-2;
+}
 .main-header {
   @apply text-3xl font-bold text-gray-800 mb-2;
   font-family: 'Evoria', system-ui, sans-serif;

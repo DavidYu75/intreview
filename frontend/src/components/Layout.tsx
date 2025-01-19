@@ -1,5 +1,4 @@
 import React from 'react';
-import { Settings } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import './Layout.css';
 
@@ -23,9 +22,14 @@ const Layout: React.FC<LayoutProps> = ({ children}) => {
             />
           </Link>
           <div className="top-bar-actions">
-            <button>
-              <Settings className="icon" />
-            </button>
+            <div 
+              className="profile-circle"
+              style={{ 
+                backgroundImage: `url('../public/images/squid.jpg')`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+              }}
+            ></div>
           </div>
         </div>
       </div>

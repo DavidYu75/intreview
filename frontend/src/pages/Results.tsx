@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
+// Add these imports
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Mic, Camera, Clock, BarChart, Download } from 'lucide-react';
 import './Results.css';
@@ -141,6 +144,7 @@ const ResultsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const videoRef = useRef<HTMLVideoElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -210,6 +214,30 @@ const ResultsPage = () => {
     }
   };
 
+  const handleDownload = async () => {
+    if (!contentRef.current || !results) return;
+
+    try {
+      const contentElement = contentRef.current;
+      const canvas = await html2canvas(contentElement, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
+
+      const imgWidth = 208; // A4 width in mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, imgWidth, imgHeight);
+
+      const date = new Date(results.interview_date).toLocaleDateString();
+      pdf.save(`Interview-Results-${date}.pdf`);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    }
+  };
+
   if (isLoading || !results) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -248,13 +276,14 @@ const ResultsPage = () => {
             {formatDate(results.interview_date)} • {formatDuration(results.duration_minutes)}
           </p>
         </div>
-        <button className="download-button">
+        <button className="download-button" onClick={handleDownload}>
           <Download className="icon" />
           Download Report
         </button>
       </header>
 
-      <main className="main-content">
+      {/* Add ref to the main content */}
+      <main className="main-content" ref={contentRef}>
         {/* Overall Performance */}
         <section className="overall-performance section-card">
           <h2 className="section-title">Overall Performance</h2>
