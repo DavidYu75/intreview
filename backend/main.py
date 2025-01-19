@@ -8,6 +8,7 @@ from fastapi.staticfiles import StaticFiles
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from app.api.routes import session_routes
+from app.api.routes import auth_routes  # Add this line
 
 app = FastAPI(
     title="Intreview API",
@@ -30,7 +31,8 @@ print(f"Static directory path: {static_dir}")  # Add this line to debug
 app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
 # Include routers
-app.include_router(session_routes.router, prefix="/api")
+app.include_router(auth_routes.router, prefix="/auth", tags=["authentication"])  # Add this line
+app.include_router(session_routes.router, prefix="/api", tags=["sessions"])
 
 @app.get("/")
 async def root():

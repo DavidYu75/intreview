@@ -1,39 +1,48 @@
-import sys
-import os
-from fastapi import APIRouter, WebSocket, HTTPException
+from fastapi import APIRouter, WebSocket, HTTPException, Depends
 from typing import Dict, List
 import uuid
 from datetime import datetime
 from bson import ObjectId
 
-
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 from app.services.websocket_handler import handle_websocket
 from app.services.recording_storage import RecordingStorage
 from app.db.models.analysis_models import AnalysisStorage
+from app.services.auth_service import AuthService
+from app.db.models.user_models import User
 from app.core.config import get_settings
 
 settings = get_settings()
 
 router = APIRouter()
+
 # Initialize services
 recording_storage = RecordingStorage(settings.MONGODB_URL, settings.DATABASE_NAME)
 analysis_storage = AnalysisStorage(recording_storage.db)
+auth_service = AuthService(recording_storage.db)
 
 # In-memory storage for active sessions
 active_sessions: Dict[str, Dict] = {}
 
 @router.post("/sessions/start")
-async def start_session():
+async def start_session(current_user: User = Depends(auth_service.get_current_user)):
     """Start a new interview session"""
     session_id = str(uuid.uuid4())
     session_data = {
         "id": session_id,
+        "user_id": current_user.id,
         "start_time": datetime.utcnow(),
         "status": "active"
     }
     active_sessions[session_id] = session_data
+    
+    # Create record in database
+    await recording_storage.db.recordings.insert_one({
+        "session_id": session_id,
+        "user_id": current_user.id,
+        "start_time": datetime.utcnow(),
+        "status": "active"
+    })
+    
     return {"session_id": session_id}
 
 @router.websocket("/ws/{session_id}")
@@ -46,14 +55,32 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str):
     await handle_websocket(websocket, session_id)
 
 @router.get("/sessions/{session_id}/analysis")
-async def get_session_analysis(session_id: str):
+async def get_session_analysis(
+    session_id: str,
+    current_user: User = Depends(auth_service.get_current_user)
+):
     """Get analysis results for a specific session"""
     try:
+        # Check if session belongs to user
+        session = await recording_storage.db.recordings.find_one({
+            "session_id": session_id,
+            "user_id": current_user.id
+        })
+        
+        if not session:
+            raise HTTPException(
+                status_code=404,
+                detail="Session not found or access denied"
+            )
+        
         # Get all analyses for the session
         analyses = await analysis_storage.get_session_analyses(session_id)
         
         if not analyses:
-            raise HTTPException(status_code=404, detail="No analysis found for this session")
+            raise HTTPException(
+                status_code=404,
+                detail="No analysis found for this session"
+            )
         
         # Return the most recent analysis
         latest_analysis = max(analyses, key=lambda x: x.timestamp)
@@ -65,29 +92,37 @@ async def get_session_analysis(session_id: str):
         }
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error retrieving analysis: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error retrieving analysis: {str(e)}"
+        )
 
 @router.get("/sessions/{session_id}/recording")
-async def get_session_recording(session_id: str):
+async def get_session_recording(
+    session_id: str,
+    current_user: User = Depends(auth_service.get_current_user)
+):
     """Get recording data for a specific session"""
     try:
-        # Find recording ID for the session
-        recordings = await recording_storage.db.recordings.find({
-            "session_id": session_id
-        }).to_list(length=1)
+        # Find recording for the session and verify ownership
+        recording = await recording_storage.db.recordings.find_one({
+            "session_id": session_id,
+            "user_id": current_user.id
+        })
         
-        if not recordings:
-            raise HTTPException(status_code=404, detail="No recording found for this session")
+        if not recording:
+            raise HTTPException(
+                status_code=404,
+                detail="Recording not found or access denied"
+            )
             
-        recording = recordings[0]
         recording_id = str(recording["_id"])
         
         # Get chunks for preview/playback
         video_chunks = await recording_storage.get_recording_chunks(recording_id, "video")
         
-        # We'll return a sample of frames for preview
-        sample_rate = 10  # Return every 10th frame
-        preview_frames = video_chunks[::sample_rate]
+        # Return every 10th frame for preview
+        preview_frames = video_chunks[::10]
         
         return {
             "session_id": session_id,
@@ -96,26 +131,34 @@ async def get_session_recording(session_id: str):
             "start_time": recording.get("start_time"),
             "end_time": recording.get("end_time"),
             "frame_count": len(video_chunks),
-            "preview_frames": preview_frames[:10]  # Limit to first 10 sampled frames
+            "preview_frames": preview_frames[:10]  # First 10 sampled frames
         }
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error retrieving recording: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error retrieving recording: {str(e)}"
+        )
 
-@router.get("/sessions/user/{user_id}/history")
-async def get_user_session_history(user_id: str, skip: int = 0, limit: int = 10):
-    """Get session history for a specific user"""
+@router.get("/sessions/history")
+async def get_session_history(
+    skip: int = 0,
+    limit: int = 10,
+    current_user: User = Depends(auth_service.get_current_user)
+):
+    """Get session history for current user"""
     try:
         # Get all sessions for the user
         sessions = await recording_storage.db.recordings.find({
-            "user_id": user_id  # Note: You'll need to store user_id in recordings
+            "user_id": current_user.id
         }).sort("start_time", -1).skip(skip).limit(limit).to_list(length=limit)
         
         if not sessions:
             return {
-                "user_id": user_id,
                 "sessions": [],
-                "total": 0
+                "total": 0,
+                "page": 1,
+                "pages": 0
             }
         
         # Get analysis results for each session
@@ -142,11 +185,10 @@ async def get_user_session_history(user_id: str, skip: int = 0, limit: int = 10)
         
         # Get total count for pagination
         total_sessions = await recording_storage.db.recordings.count_documents({
-            "user_id": user_id
+            "user_id": current_user.id
         })
         
         return {
-            "user_id": user_id,
             "sessions": session_data,
             "total": total_sessions,
             "page": skip // limit + 1,
@@ -154,16 +196,43 @@ async def get_user_session_history(user_id: str, skip: int = 0, limit: int = 10)
         }
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error retrieving session history: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error retrieving session history: {str(e)}"
+        )
 
 @router.post("/sessions/{session_id}/end")
-async def end_session(session_id: str):
+async def end_session(
+    session_id: str,
+    current_user: User = Depends(auth_service.get_current_user)
+):
     """End an interview session"""
-    if session_id not in active_sessions:
-        raise HTTPException(status_code=404, detail="Session not found")
+    # Check if session exists and belongs to user
+    session = await recording_storage.db.recordings.find_one({
+        "session_id": session_id,
+        "user_id": current_user.id
+    })
     
-    session = active_sessions[session_id]
-    session["end_time"] = datetime.utcnow()
-    session["status"] = "completed"
+    if not session:
+        raise HTTPException(
+            status_code=404,
+            detail="Session not found or access denied"
+        )
+    
+    # Update session status
+    await recording_storage.db.recordings.update_one(
+        {"session_id": session_id},
+        {
+            "$set": {
+                "status": "completed",
+                "end_time": datetime.utcnow()
+            }
+        }
+    )
+    
+    # Update in-memory session data
+    if session_id in active_sessions:
+        active_sessions[session_id]["status"] = "completed"
+        active_sessions[session_id]["end_time"] = datetime.utcnow()
     
     return {"message": "Session ended successfully"}
