@@ -23,6 +23,17 @@ auth_service = AuthService(recording_storage.db)
 # In-memory storage for active sessions
 active_sessions: Dict[str, Dict] = {}
 
+@router.websocket("/ws/video")
+async def websocket_video_endpoint(websocket: WebSocket):
+    """WebSocket endpoint for real-time video processing - No auth required"""
+    await handle_websocket(websocket)
+
+@router.post("/analyze")
+async def analyze_video():
+    """Endpoint for post-session analysis - No auth required"""
+    # Add your analysis logic here
+    return {"message": "Analysis complete"}
+
 @router.post("/sessions/start")
 async def start_session(current_user: User = Depends(auth_service.get_current_user)):
     """Start a new interview session"""
