@@ -17,6 +17,7 @@ class AnalysisManager:
     def __init__(self):
         self.video_processor = VideoProcessor()
         self.speech_analyzer = SpeechAnalyzer()
+        self.recorded_frames = []  # Store frames during recording
 
     async def process_frame(self, frame_data: str):
         """
@@ -24,8 +25,12 @@ class AnalysisManager:
         return real-time feedback.
         """
         try:
+            # Decode and store frame
             encoded_data = frame_data.split(',')[1] if ',' in frame_data else frame_data
-            nparr = np.frombuffer(base64.b64decode(encoded_data), np.uint8)
+            frame_bytes = base64.b64decode(encoded_data)
+            self.recorded_frames.append(frame_bytes)
+
+            nparr = np.frombuffer(frame_bytes, np.uint8)
             frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
             if frame is None:
@@ -86,6 +91,14 @@ class AnalysisManager:
                 "is_filler_word": False,
                 "confidence": None
             }
+
+    async def get_recorded_frames(self) -> List[bytes]:
+        """Get all recorded frames"""
+        return self.recorded_frames
+
+    async def clear_frames(self):
+        """Clear stored frames"""
+        self.recorded_frames = []
 
     async def get_session_summary(self):
         """Get summary of the entire session"""

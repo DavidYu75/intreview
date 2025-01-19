@@ -97,3 +97,29 @@ class RecordingStorage:
         await self.chunks.delete_many({"recording_id": ObjectId(recording_id)})
         # Delete recording document
         await self.recordings.delete_one({"_id": ObjectId(recording_id)})
+    
+    async def store_frame(self, session_id: str, frame_data: bytes, timestamp: float):
+        """Store a video frame"""
+        try:
+            chunk_doc = {
+                "session_id": session_id,
+                "timestamp": timestamp,
+                "type": "video",
+                "data": frame_data,
+                "order": int(timestamp * 30)  # Assume 30fps for ordering
+            }
+            await self.chunks.insert_one(chunk_doc)
+        except Exception as e:
+            logger.error(f"Failed to store frame: {e}")
+
+    async def get_session_video(self, session_id: str) -> bytes:
+        """Get all video frames for a session in order"""
+        try:
+            chunks = await self.chunks.find(
+                {"session_id": session_id, "type": "video"}
+            ).sort("order", 1).to_list(length=None)
+            
+            return b''.join(chunk["data"] for chunk in chunks)
+        except Exception as e:
+            logger.error(f"Failed to get video: {e}")
+            return b''

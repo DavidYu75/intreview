@@ -6,7 +6,7 @@
   @apply flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200;
 }
 .date {
-    @apply text-sm text-gray-600;
+  @apply text-sm text-gray-600;
 }
 .back-button {
   @apply flex items-center text-white hover:text-gray-200;
@@ -27,7 +27,7 @@
 
 /* Section Styles */
 .section-card {
-  @apply bg-white rounded-lg shadow p-3 mb-3;  /* reduced from p-4 mb-6 */
+  @apply bg-white rounded-lg shadow p-3 mb-3;
 }
 .section-title {
   @apply text-xl font-semibold text-gray-900 mb-1;
@@ -51,44 +51,38 @@
   @apply text-xl font-semibold text-gray-900;
 }
 
-/* Overall Performance */
+/* Performance Grid */
 .performance-grid {
   @apply flex items-center justify-between px-4;
 }
-
 .performance-chart {
   @apply flex-[0_0_40%] flex justify-center items-center;
 }
-
 .performance-details {
-  @apply flex-[0_0_55%] grid grid-cols-3 gap-4;  /* Changed to grid layout */
+  @apply flex-[0_0_55%] grid grid-cols-3 gap-4;
 }
-
 .chart-svg {
-  @apply w-64 h-64;  /* Increased from w-48 h-48 to make chart much larger */
+  @apply w-64 h-64; /* Larger chart */
 }
-
 .performance-details > div {
-  @apply flex flex-col justify-center items-center text-center p-3;  /* Better card styling */
+  @apply flex flex-col justify-center items-center text-center p-3;
 }
-
 .metric-title {
-  @apply text-sm font-medium text-gray-600 mb-2;  /* Adjusted spacing and weight */
+  @apply text-sm font-medium text-gray-600 mb-2;
 }
-
 .metric-value {
-  @apply text-xl font-bold text-indigo-600;  /* Made values more prominent */
+  @apply text-xl font-bold text-indigo-600;
 }
 
 /* Analysis Section */
 .analysis-section {
-  @apply grid grid-cols-1 lg:grid-cols-2 gap-3;  /* reduced from gap-6 */
+  @apply grid grid-cols-1 lg:grid-cols-2 gap-3;
 }
 .analysis-content {
-  @apply space-y-2;  /* reduced from space-y-4 */
+  @apply space-y-2;
 }
 .analysis-item {
-  @apply flex flex-col space-y-2;  /* increased from space-y-1 to create more spacing */
+  @apply flex flex-col space-y-2;
 }
 .metric-title {
   @apply text-sm text-gray-600 pt-4;
@@ -113,45 +107,44 @@
 .progress-bar-container {
   @apply relative w-full;
 }
-
 .ideal-pace-marker {
   position: absolute;
   top: -2px;
   left: 50%;
   height: calc(100% + 4px);
   width: 2px;
-  background-color: #9CA3AF; /* Changed to gray-400 for softer appearance */
+  background-color: #9CA3AF;
   transform: translateX(-50%);
   z-index: 1;
-  opacity: 0.6; /* Added slight transparency */
+  opacity: 0.6;
 }
-
 .progress-bar {
   @apply relative bg-gray-200 rounded-full h-2;
 }
-
 .progress.red {
   @apply bg-red-500 h-full rounded-full transition-all duration-300;
 }
-
 .progress.yellow {
   @apply bg-yellow-500 h-full rounded-full transition-all duration-300;
 }
-
 .progress.green {
   @apply bg-green-500 h-full rounded-full transition-all duration-300;
 }
 
-/* Add these new styles */
+/* Sentiment Bar */
 .progress.sentiment-progress {
   @apply bg-green-500 h-full rounded-full transition-all duration-300;
-  opacity: 0.4;  /* Lower opacity for neutral */
+  opacity: 0.4; /* default for moderate positivity */
 }
-
-/* Make sentiment progress bar more opaque based on how positive the sentiment is */
-.progress.sentiment-progress[style*="width: 75"] { opacity: 1; }
-.progress.sentiment-progress[style*="width: 50"] { opacity: 0.8; }
-.progress.sentiment-progress[style*="width: 25"] { opacity: 0.6; }
+.progress.sentiment-progress[style*="width: 75"] { 
+  opacity: 1; 
+}
+.progress.sentiment-progress[style*="width: 50"] { 
+  opacity: 0.8; 
+}
+.progress.sentiment-progress[style*="width: 25"] { 
+  opacity: 0.6; 
+}
 
 /* Key Moments */
 .key-moments-container {
@@ -162,59 +155,55 @@
 }
 .moments-list {
   flex: 0 0 40%;
-  padding: 0.5rem;  /* reduced from 1rem */
+  padding: 0.5rem;
   margin: 0;
   list-style: none;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 0.75rem;  /* reduced from 1.5rem */
-  color:darkslategray;
+  gap: 0.75rem;
+  color: darkslategray;
 }
 .moments-list li {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.5rem;
-  transition: background-color 0.2s;
+  @apply flex items-center gap-3 p-3 rounded-lg;
+  cursor: pointer;
 }
 .moments-list li:hover {
-  background-color: #f1f5f9;
+  @apply bg-slate-100;
 }
 .moment-icon {
+  @apply flex-shrink-0;
   @apply w-5 h-5 text-indigo-600;
   color: #6366F1;
 }
 
 /* Recommendations */
 .recommendations-list {
-  @apply space-y-2;  /* reduced from space-y-4 */
+  @apply space-y-2;
   @apply text-sm text-gray-600;
 }
-
 .rec-icon {
   @apply w-5 h-5 text-green-500;
 }
 
+/* Center Text on Donut */
 .score-text {
-  @apply text-sm font-medium;  /* Reduced back to text-sm from text-base */
+  @apply text-sm font-medium;
 }
 
 /* Video Player */
 .video-player-container {
-  @apply mt-1;  /* reduced from mt-6 */
+  @apply mt-1;
   flex: 0 0 55%;
   max-width: 55%;
 }
-
 .video-player {
-  @apply w-full aspect-video object-cover;
-  width: 100%;
-  border-radius: 0.5rem;
+  @apply w-full rounded-lg shadow-lg;
+  max-height: 400px;
+  object-fit: contain;
 }
-
 .main-content {
-  @apply flex-1 p-3 overflow-y-auto;  /* reduced from p-6 */
+  @apply flex-1 p-3 overflow-y-auto;
 }
 
 /* Common Styles for Cards */
@@ -224,33 +213,20 @@
 .moments-list li {
   @apply bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors text-gray-600;
 }
-
 .performance-details {
   @apply flex flex-col gap-4;
 }
-
 .analysis-metrics {
   @apply flex flex-col gap-4;
 }
-
 .recommendations-list {
   @apply flex flex-col gap-4;
 }
 
-/* Remove the old background and hover styles */
-.moments-list li {
-  background-color: transparent;
-}
-
-.moments-list li:hover {
-  background-color: transparent;
-}
-
 /* Transcript Section */
 .transcript {
-  @apply col-span-full;  /* Make transcript take full width */
+  @apply col-span-full;
 }
-
 .transcript-content {
   min-height: 200px;
   max-height: 400px;
@@ -258,32 +234,21 @@
   line-height: 1.7;
   letter-spacing: 0.01em;
   overflow-y: auto;
-  color: #505050; /* Explicitly set to gray-800 for consistency */
+  color: #505050;
 }
-
 .transcript-content p {
   white-space: pre-wrap;
   margin-bottom: 1em;
 }
-
-.transcript-content {
-  font-size: 0.95rem;
-  line-height: 1.6;
-  letter-spacing: 0.01em;
-}
-
 .transcript-content::-webkit-scrollbar {
   width: 8px;
 }
-
 .transcript-content::-webkit-scrollbar-track {
   @apply bg-gray-100 rounded-full;
 }
-
 .transcript-content::-webkit-scrollbar-thumb {
   @apply bg-gray-300 rounded-full;
 }
-
 .transcript-content::-webkit-scrollbar-thumb:hover {
   @apply bg-gray-400;
 }

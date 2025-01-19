@@ -1,8 +1,9 @@
-from fastapi import APIRouter, WebSocket, HTTPException, Depends, UploadFile, File
+from fastapi import APIRouter, WebSocket, HTTPException, Depends, UploadFile, File, Response
 from typing import Dict, List
 import uuid
 from datetime import datetime
 from bson import ObjectId
+import base64
 
 from app.services.websocket_handler import handle_websocket, analysis_manager  # Add analysis_manager import
 from app.services.recording_storage import RecordingStorage
@@ -256,6 +257,60 @@ async def end_session(
         }
         logger.info(f"Final combined results: {combined_results}")
 
+        # Add key moments with proper error handling
+        try:
+            key_moments = [
+                {
+                    "timestamp": next((t for t, w in enumerate(analysis_results.words) if "algorithm" in w.lower()), 0),
+                    "type": "technical",
+                    "description": "Technical Discussion"
+                },
+                {
+                    "timestamp": next((fw["timestamp"] for fw in analysis_results.filler_words), 0),
+                    "type": "communication",
+                    "description": "Filler Words Detected"
+                }
+            ] if analysis_results.words else []
+        except Exception as e:
+            logger.warning(f"Error creating key moments: {e}")
+            key_moments = []
+
+        # Store the recording frames from the WebSocket session
+        video_data = await analysis_manager.get_recorded_frames()
+        for idx, frame in enumerate(video_data):
+            await recording_storage.store_frame(session_id, frame, idx / 30.0)
+
+        # Generate key moments from filler words and transcript
+        key_moments = []
+        
+        # Add filler word moments
+        for filler in analysis_results.filler_words:
+            key_moments.append({
+                "timestamp": filler["timestamp"],
+                "type": "communication",
+                "description": f"Filler Word: {filler['word']}"
+            })
+        
+        # Add any long pauses or significant moments
+        words = analysis_results.words
+        for i in range(len(words)):
+            # Check for technical terms
+            if any(term in words[i].lower() for term in ["algorithm", "code", "system", "design", "technical"]):
+                key_moments.append({
+                    "timestamp": i,
+                    "type": "technical",
+                    "description": f"Technical Discussion: {words[i]}"
+                })
+
+        combined_results = {
+            **combined_results,
+            "key_moments": sorted(key_moments, key=lambda x: x["timestamp"]),
+            "video_url": f"/api/sessions/{session_id}/video"
+        }
+        
+        logger.info(f"Generated {len(key_moments)} key moments")
+        logger.info(f"Final combined results: {combined_results}")
+
         response_data = {
             "message": "Session ended successfully",
             "analysis": combined_results
@@ -269,3 +324,34 @@ async def end_session(
             status_code=500,
             detail=f"Error ending session: {str(e)}"
         )
+
+@router.get("/sessions/{session_id}/video")
+async def get_session_video(session_id: str, current_user: User = Depends(auth_service.get_current_user)):
+    """Get the session video recording"""
+    try:
+        # Verify ownership
+        recording = await recording_storage.db.recordings.find_one({
+            "session_id": session_id,
+            "user_id": current_user.id
+        })
+        
+        if not recording:
+            raise HTTPException(status_code=404, detail="Recording not found")
+        
+        # Get video data
+        video_data = await recording_storage.get_session_video(session_id)
+        if not video_data:
+            raise HTTPException(status_code=404, detail="Video data not found")
+        
+        # Return as streaming response
+        return Response(
+            content=video_data,
+            media_type="video/webm",
+            headers={
+                "Content-Disposition": f"inline; filename={session_id}.webm",
+                "Cache-Control": "max-age=3600"
+            }
+        )
+    except Exception as e:
+        logger.error(f"Error getting video: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
