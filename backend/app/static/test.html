@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Intreview WebSocket Test</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        #videoFeed { 
+            background: #ddd; 
+            width: 640px; 
+            height: 480px;
+            margin-bottom: 10px;
+        }
+        #log { 
+            height: 300px; 
+            overflow-y: scroll; 
+            border: 1px solid #ccc; 
+            padding: 10px; 
+            background: #f5f5f5;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        button { 
+            margin: 10px 5px; 
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+        .controls {
+            margin-bottom: 20px;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 5px;
+            background: #eee;
+            border-radius: 4px;
+        }
+        .metrics-panel {
+            padding: 15px;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .metric {
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        .metric-label {
+            font-weight: bold;
+        }
+        .metric-value {
+            font-family: monospace;
+        }
+        .attention-good {
+            color: green;
+        }
+        .attention-poor {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Intreview WebSocket Test</h1>
+    
+    <div class="controls">
+        <button onclick="startSession()">1. Start Session</button>
+        <button onclick="connectWebSocket()">2. Connect WebSocket</button>
+        <button onclick="startCamera()">3. Start Camera</button>
+        <button onclick="stopCamera()">Stop Camera</button>
+    </div>
+
+    <div class="container">
+        <div class="video-container">
+            <video id="videoFeed" autoplay playsinline></video>
+            <div class="status">Session ID: <span id="sessionId">None</span></div>
+            <div class="status">WebSocket Status: <span id="wsStatus">Disconnected</span></div>
+            
+            <div class="metrics-panel">
+                <h3>Real-time Metrics</h3>
+                <div class="metric">
+                    <span class="metric-label">Face Detected:</span>
+                    <span class="metric-value" id="faceDetected">No</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Attention Status:</span>
+                    <span class="metric-value" id="attentionStatus">Unknown</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Face Position:</span>
+                    <span class="metric-value" id="facePosition">Unknown</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Sentiment:</span>
+                    <span class="metric-value" id="sentiment">neutral</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Frame Rate:</span>
+                    <span class="metric-value" id="frameRate">0 fps</span>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <h3>Event Log</h3>
+            <div id="log"></div>
+        </div>
+    </div>
+
+    <canvas id="canvas" style="display:none;"></canvas>
+
+    <script>
+        let sessionId = null;
+        let ws = null;
+        let videoStream = null;
+        let isStreaming = false;
+        let frameCount = 0;
+        let lastFrameTime = Date.now();
+
+        function updateFrameRate() {
+            const now = Date.now();
+            const elapsed = (now - lastFrameTime) / 1000;
+            const fps = Math.round(frameCount / elapsed);
+            document.getElementById('frameRate').textContent = `${fps} fps`;
+            frameCount = 0;
+            lastFrameTime = now;
+        }
+        setInterval(updateFrameRate, 1000);
+
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            if (typeof message === 'object') {
+                message = JSON.stringify(message, null, 2);
+            }
+            logDiv.innerHTML += message + '\n';
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function updateMetrics(feedback) {
+            document.getElementById('faceDetected').textContent = feedback.face_detected ? 'Yes' : 'No';
+            
+            const attentionStatus = document.getElementById('attentionStatus');
+            attentionStatus.textContent = feedback.attention_status;
+            attentionStatus.className = feedback.attention_status === 'centered' ? 'attention-good' : 'attention-poor';
+            
+            if (feedback.face_position) {
+                document.getElementById('facePosition').textContent = 
+                    `X: ${feedback.face_position.x.toFixed(0)}, Y: ${feedback.face_position.y.toFixed(0)}`;
+            }
+            
+            document.getElementById('sentiment').textContent = feedback.sentiment || 'neutral';
+        }
+
+        async function startSession() {
+            try {
+                const response = await fetch('http://localhost:8000/api/sessions/start', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                sessionId = data.session_id;
+                document.getElementById('sessionId').textContent = sessionId;
+                log('Session started: ' + sessionId);
+            } catch (error) {
+                log('Error starting session: ' + error);
+            }
+        }
+
+        function connectWebSocket() {
+            if (!sessionId) {
+                log('Please start a session first');
+                return;
+            }
+
+            if (ws) {
+                ws.close();
+            }
+
+            try {
+                ws = new WebSocket(`ws://localhost:8000/api/ws/${sessionId}`);
+                
+                ws.onopen = () => {
+                    document.getElementById('wsStatus').textContent = 'Connected';
+                    log('WebSocket connected');
+                };
+                
+                ws.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    log('Received: ' + JSON.stringify(data, null, 2));
+                    if (data.type === 'video_feedback' && data.feedback) {
+                        updateMetrics(data.feedback);
+                    }
+                };
+                
+                ws.onerror = (error) => {
+                    log('WebSocket error: ' + error);
+                    console.error('WebSocket error:', error);
+                };
+                
+                ws.onclose = () => {
+                    document.getElementById('wsStatus').textContent = 'Disconnected';
+                    log('WebSocket disconnected');
+                };
+            } catch (error) {
+                log('Error connecting WebSocket: ' + error);
+                console.error('WebSocket connection error:', error);
+            }
+        }
+
+        async function startCamera() {
+            try {
+                videoStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        width: 640, 
+                        height: 480,
+                        facingMode: "user"
+                    },
+                    audio: true 
+                });
+                const videoElement = document.getElementById('videoFeed');
+                videoElement.srcObject = videoStream;
+                isStreaming = true;
+                log('Camera started');
+                sendVideoFrames();
+            } catch (error) {
+                log('Error accessing camera: ' + error);
+                console.error('Camera error:', error);
+            }
+        }
+
+        function stopCamera() {
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+                document.getElementById('videoFeed').srcObject = null;
+                isStreaming = false;
+                log('Camera stopped');
+            }
+        }
+
+        function sendVideoFrames() {
+            if (!isStreaming || !ws || ws.readyState !== WebSocket.OPEN) return;
+
+            const video = document.getElementById('videoFeed');
+            const canvas = document.getElementById('canvas');
+            const context = canvas.getContext('2d');
+
+            canvas.width = 640;
+            canvas.height = 480;
+
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const frame = canvas.toDataURL('image/jpeg', 0.8);
+
+            try {
+                ws.send(JSON.stringify({
+                    type: 'video',
+                    frame: frame.split(',')[1]
+                }));
+                frameCount++;
+            } catch (error) {
+                log('Error sending frame: ' + error);
+                console.error('Frame sending error:', error);
+            }
+
+            requestAnimationFrame(sendVideoFrames);
+        }
+    </script>
+</body>
+</html>
