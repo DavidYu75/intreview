@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mic, Volume2 } from 'lucide-react';
+import LoadingContext from '../contexts/LoadingContext';
 import './Camera.css';
 
 const CameraPage = () => {
   const [isRecording, setIsRecording] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);  // Add this line
   const [isMuted, setIsMuted] = useState(false);
   const [time, setTime] = useState(0);
   const [audioLevel, setAudioLevel] = useState(0);
@@ -147,6 +149,7 @@ const CameraPage = () => {
   // -- Start / Stop recording --
   const handleRecording = async () => {
     if (isRecording) {
+      setIsLoading(true); // Show loading screen
       // -- Stop recording --
       if (timerRef.current) {
         clearInterval(timerRef.current);
@@ -187,6 +190,7 @@ const CameraPage = () => {
           }
         } catch (error) {
           console.error('Error analyzing speech:', error);
+          setIsLoading(false); // Hide loading if error
         }
       }
     } else {
@@ -306,6 +310,11 @@ const CameraPage = () => {
   const eyeContactLabel = eyeContact ? 'Yes' : 'No';
   const eyeContactColor = eyeContact ? 'green' : 'red';
   const eyeContactWidth = '100%'; // always full
+
+  // Add loading screen
+  if (isLoading) {
+    return <LoadingContext />;
+  }
 
   return (
     <div className="container">

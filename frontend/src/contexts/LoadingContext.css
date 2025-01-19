@@ -1,0 +1,43 @@
+@font-face {
+  font-family: 'Evoria';
+  src: url('../../public/fonts/evoria-font/EvoriaRegular-3z5Y6.ttf') format('truetype');
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.loading-logo {
+  width: 8rem; /* 16rem */
+  height: 8rem; /* 16rem */
+  margin: auto;
+}
+
+.text-center {
+  margin-top: 12rem;
+}
+
+.loading-text {
+  margin-top: 1rem;
+  font-size: 2rem;
+  font-weight: bold;
+  font-family: 'Evoria', sans-serif; /* Apply the custom font */
+}
+
+.int-text {
+  color: #5046E4;
+}
+
+.reviewing-text {
+  color: #2F2A84;
+  font-size: 1.75rem;
+}
