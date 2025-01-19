@@ -65,16 +65,6 @@ const CameraPage = () => {
       const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
       const normalizedLevel = average / 255; // 0 to 1
       setAudioLevel(normalizedLevel);
-      
-      // Adjusted thresholds based on real speech test
-      if (normalizedLevel > 0.25) {
-        console.log('Loud volume detected:', normalizedLevel.toFixed(2));
-      } else if (normalizedLevel > 0.15) {
-        console.log('Normal volume detected:', normalizedLevel.toFixed(2));
-      } else if (normalizedLevel > 0.07) {
-        console.log('Low volume detected:', normalizedLevel.toFixed(2));
-      }
-
       requestAnimationFrame(updateLevel);
     };
 
@@ -104,8 +94,8 @@ const CameraPage = () => {
   };
 
   const getBorderColor = (level: number) => {
-    if (level < 0.07) return 'border-transparent';
-    if (level < 0.15) return 'border-yellow-400';
+    if (level < 0.05) return 'border-transparent';
+    if (level < 0.08) return 'border-yellow-400';
     return 'border-green-500';
   };
 
