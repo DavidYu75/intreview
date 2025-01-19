@@ -1,5 +1,6 @@
 import React from 'react';
 import { Settings } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import './Layout.css';
 
 interface LayoutProps {
@@ -14,13 +15,13 @@ const Layout: React.FC<LayoutProps> = ({ children}) => {
     <div className="layout-container">
       <div className="top-bar">
         <div className="top-bar-content">
-          <div className="logo-container">
+          <Link to="/" className="logo-container">
             <img 
-              src="../public/images/Vector.svg" 
+              src="../public/images/logov2.svg" 
               alt="Intreview" 
               className="h-10 w-auto"  // Changed from h-8 to h-10
             />
-          </div>
+          </Link>
           <div className="top-bar-actions">
             <button>
               <Settings className="icon" />

@@ -8,7 +8,7 @@ function App() {
     <>
        <div className="logo-main">
          <img 
-           src="../public/images/Vector.svg" 
+           src="../public/images/logov2.svg" 
            alt="Intreview" 
            className="h-10 w-auto"
         />
