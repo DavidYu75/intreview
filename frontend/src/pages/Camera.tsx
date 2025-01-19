@@ -12,6 +12,7 @@ const CameraPage = () => {
   const [sentiment, setSentiment] = useState<string>('Neutral');
   const [eyeContact, setEyeContact] = useState<number>(0);
   const [ws, setWs] = useState<WebSocket | null>(null);
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -19,8 +20,10 @@ const CameraPage = () => {
   const analyserRef = useRef<AnalyserNode | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+
   const navigate = useNavigate();
 
+  // -- Set up audio + video stream on mount --
   useEffect(() => {
     async function getMedia() {
       try {
@@ -30,10 +33,10 @@ const CameraPage = () => {
             echoCancellation: true,
             noiseSuppression: true,
             autoGainControl: false, // Disable automatic gain control
-            sampleRate: 48000 // Higher sample rate for better quality
+            sampleRate: 48000       // Higher sample rate for better quality
           }
         });
-        
+
         streamRef.current = stream;
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
@@ -46,10 +49,8 @@ const CameraPage = () => {
         analyserRef.current = audioContextRef.current.createAnalyser();
         const source = audioContextRef.current.createMediaStreamSource(stream);
         source.connect(analyserRef.current);
-        // Don't connect to audio destination to prevent feedback
-        // source.connect(audioContextRef.current.destination);
 
-        // Set up MediaRecorder
+        // Set up MediaRecorder for audio
         mediaRecorderRef.current = new MediaRecorder(stream);
         mediaRecorderRef.current.ondataavailable = (event) => {
           if (event.data.size > 0) {
@@ -66,6 +67,7 @@ const CameraPage = () => {
 
     getMedia();
 
+    // Cleanup on unmount
     return () => {
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(track => track.stop());
@@ -79,6 +81,7 @@ const CameraPage = () => {
     };
   }, []);
 
+  // -- WebSocket setup --
   useEffect(() => {
     const newWs = new WebSocket('ws://localhost:8000/api/ws/video');
     
@@ -91,8 +94,11 @@ const CameraPage = () => {
         const data = JSON.parse(evt.data);
         if (data.type === 'video_feedback') {
           const feedback = data.feedback;
+          // Example posture update
           setPosture(feedback.attention_status === 'poor posture' ? 'Poor' : 'Good');
+          // Example sentiment update
           setSentiment(feedback.sentiment.charAt(0).toUpperCase() + feedback.sentiment.slice(1));
+          // Example eye contact update
           setEyeContact(feedback.attention_status === 'centered' ? 100 : 50);
         }
       } catch (error) {
@@ -117,6 +123,7 @@ const CameraPage = () => {
     };
   }, []);
 
+  // -- Audio volume monitoring --
   const monitorAudioLevel = () => {
     if (!analyserRef.current) return;
 
@@ -132,18 +139,19 @@ const CameraPage = () => {
     updateLevel();
   };
 
+  // -- Start / Stop recording --
   const handleRecording = async () => {
     if (isRecording) {
-      // Stop recording
+      // -- Stop recording --
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
       
       if (mediaRecorderRef.current) {
         mediaRecorderRef.current.stop();
-        await new Promise(resolve => {
+        await new Promise<void>((resolve) => {
           if (mediaRecorderRef.current) {
-            mediaRecorderRef.current.onstop = resolve;
+            mediaRecorderRef.current.onstop = () => resolve();
           }
         });
 
@@ -177,7 +185,7 @@ const CameraPage = () => {
         }
       }
     } else {
-      // Start new recording
+      // -- Start new recording --
       audioChunksRef.current = [];
       if (mediaRecorderRef.current) {
         mediaRecorderRef.current.start();
@@ -190,37 +198,74 @@ const CameraPage = () => {
     setIsRecording(!isRecording);
   };
 
-  const sendVideoFrames = () => {
-    if (!isRecording || !ws || ws.readyState !== WebSocket.OPEN) return;
-    if (!videoRef.current) return;
-
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = videoRef.current.videoWidth;
-    canvas.height = videoRef.current.videoHeight;
-    ctx?.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-    const frameData = canvas.toDataURL('image/jpeg', 0.6);
-    ws.send(JSON.stringify({ type: 'video', frame: frameData.split(',')[1] }));
-    requestAnimationFrame(sendVideoFrames);
-  };
-
+  // -- Limit video frames to avoid slowdown (10 FPS example) --
   useEffect(() => {
+    let lastTime = 0;
+    let animationId: number;
+
+    const captureFrame = (time: number) => {
+      // If not recording or WS closed, stop
+      if (!isRecording || !ws || ws.readyState !== WebSocket.OPEN) {
+        cancelAnimationFrame(animationId);
+        return;
+      }
+
+      const delta = time - lastTime;
+      const interval = 1000 / 10; // 10 FPS (adjust as needed)
+
+      if (delta > interval) {
+        lastTime = time - (delta % interval);
+
+        if (videoRef.current) {
+          // Use a temporary canvas in-memory
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+
+          // Safeguard in case video hasn't loaded dimensions yet
+          const vw = videoRef.current.videoWidth || 640;
+          const vh = videoRef.current.videoHeight || 480;
+
+          canvas.width = vw;
+          canvas.height = vh;
+          ctx?.drawImage(videoRef.current, 0, 0, vw, vh);
+
+          // Reduce quality a bit more to speed up
+          const frameData = canvas.toDataURL('image/jpeg', 0.4);
+
+          ws.send(JSON.stringify({ 
+            type: 'video', 
+            frame: frameData.split(',')[1],
+          }));
+        }
+      }
+
+      animationId = requestAnimationFrame(captureFrame);
+    };
+
     if (isRecording) {
-      requestAnimationFrame(sendVideoFrames);
+      animationId = requestAnimationFrame(captureFrame);
     }
+
+    // Cleanup
+    return () => {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+    };
   }, [isRecording, ws]);
 
+  // -- Mute / Unmute --
   const handleMute = () => {
     if (streamRef.current) {
       const isCurrentlyMuted = isMuted;
       streamRef.current.getAudioTracks().forEach(track => {
-        track.enabled = isCurrentlyMuted; // Mute or unmute based on current state
+        track.enabled = isCurrentlyMuted; // Toggle
       });
-      setIsMuted(!isCurrentlyMuted); // Update the state after toggling
+      setIsMuted(!isCurrentlyMuted);
     }
   };
-  
 
+  // -- Helpers --
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -286,8 +331,8 @@ const CameraPage = () => {
                   <span>{posture}</span>
                 </div>
                 <div className="progress-bar">
-                  <div 
-                    className="progress-bar-fill" 
+                  <div
+                    className="progress-bar-fill"
                     style={{ width: posture === 'Good' ? '80%' : '40%' }}
                   ></div>
                 </div>
