@@ -8,9 +8,14 @@ const CameraPage = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [time, setTime] = useState(0);
   const [audioLevel, setAudioLevel] = useState(0);
+
+  // Posture can be "Good" or "Poor"
   const [posture, setPosture] = useState<string>('Normal');
+  // Sentiment can be "Positive", "Neutral", or anything else (e.g. "Negative")
   const [sentiment, setSentiment] = useState<string>('Neutral');
-  const [eyeContact, setEyeContact] = useState<number>(0);
+  // Eye contact is a boolean: true (Yes) / false (No)
+  const [eyeContact, setEyeContact] = useState<boolean>(true);
+
   const [ws, setWs] = useState<WebSocket | null>(null);
 
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -99,7 +104,7 @@ const CameraPage = () => {
           // Example sentiment update
           setSentiment(feedback.sentiment.charAt(0).toUpperCase() + feedback.sentiment.slice(1));
           // Example eye contact update
-          setEyeContact(feedback.attention_status === 'centered' ? 100 : 50);
+          setEyeContact(feedback.attention_status === 'centered');
         }
       } catch (error) {
         console.error('WebSocket message error:', error);
@@ -277,6 +282,31 @@ const CameraPage = () => {
     return 'border-green-500';
   };
 
+  // --- Logic for posture, sentiment, eye contact ---
+  // Posture => "Good" => full green; "Poor" => full red
+  const postureColor = posture === 'Good' ? 'green' : 'red';
+  const postureWidth = '100%'; // always full
+
+  // Sentiment => "Positive" => full green; "Neutral" => empty; else => full red
+  const sLower = sentiment.toLowerCase();
+  const isPositive = sLower === 'positive';
+  const isNeutral = sLower === 'neutral';
+  let sentimentColor = '';
+  let sentimentWidth = '0%'; // default empty
+  if (isPositive) {
+    sentimentColor = 'green';
+    sentimentWidth = '100%';
+  } else if (!isNeutral) {
+    // anything else => full red
+    sentimentColor = 'red';
+    sentimentWidth = '100%';
+  }
+
+  // Eye Contact => true => "Yes" => full green; false => "No" => full red
+  const eyeContactLabel = eyeContact ? 'Yes' : 'No';
+  const eyeContactColor = eyeContact ? 'green' : 'red';
+  const eyeContactWidth = '100%'; // always full
+
   return (
     <div className="container">
       <div className="main-content">
@@ -325,6 +355,8 @@ const CameraPage = () => {
           <h3 className="panel-header">Real-time Feedback</h3>
           <div className="panel-section">
             <div className="feedback-metrics">
+              
+              {/* Posture */}
               <div className="metric">
                 <div className="metric-label">
                   <span>Posture</span>
@@ -332,11 +364,13 @@ const CameraPage = () => {
                 </div>
                 <div className="progress-bar">
                   <div
-                    className="progress-bar-fill"
-                    style={{ width: posture === 'Good' ? '80%' : '40%' }}
+                    className={`progress ${postureColor}`}
+                    style={{ width: postureWidth }}
                   ></div>
                 </div>
               </div>
+
+              {/* Sentiment */}
               <div className="metric">
                 <div className="metric-label">
                   <span>Sentiment</span>
@@ -344,23 +378,26 @@ const CameraPage = () => {
                 </div>
                 <div className="progress-bar">
                   <div
-                    className="progress-bar-fill"
-                    style={{ width: sentiment === 'Positive' ? '75%' : '50%' }}
+                    className={`progress ${sentimentColor}`}
+                    style={{ width: sentimentWidth }}
                   ></div>
                 </div>
               </div>
+
+              {/* Eye Contact */}
               <div className="metric">
                 <div className="metric-label">
                   <span>Eye Contact</span>
-                  <span>{eyeContact}%</span>
+                  <span>{eyeContactLabel}</span>
                 </div>
                 <div className="progress-bar">
                   <div
-                    className="progress-bar-fill"
-                    style={{ width: `${eyeContact}%` }}
+                    className={`progress ${eyeContactColor}`}
+                    style={{ width: eyeContactWidth }}
                   ></div>
                 </div>
               </div>
+              
             </div>
           </div>
         </div>
