@@ -38,8 +38,6 @@
         }
         .controls {
             margin-bottom: 20px;
-            display: flex;
-            align-items: center;
         }
         .status {
             margin: 10px 0;
@@ -58,7 +56,6 @@
             margin: 5px 0;
             display: flex;
             justify-content: space-between;
-            align-items: center;
         }
         .metric-label {
             font-weight: bold;
@@ -72,17 +69,6 @@
         .attention-poor {
             color: red;
         }
-        .audio-indicator {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-left: 10px;
-            background-color: #ff4444;
-        }
-        .audio-active {
-            background-color: #44ff44;
-        }
     </style>
 </head>
 <body>
@@ -93,7 +79,6 @@
         <button onclick="connectWebSocket()">2. Connect WebSocket</button>
         <button onclick="startCamera()">3. Start Camera</button>
         <button onclick="stopCamera()">Stop Camera</button>
-        <span style="margin-left: 10px;">Audio Status: <span id="audioIndicator" class="audio-indicator"></span></span>
     </div>
 
     <div class="container">
@@ -139,7 +124,6 @@
         let sessionId = null;
         let ws = null;
         let videoStream = null;
-        let mediaRecorder = null;
         let isStreaming = false;
         let frameCount = 0;
         let lastFrameTime = Date.now();
@@ -235,7 +219,7 @@
 
         async function startCamera() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ 
+                videoStream = await navigator.mediaDevices.getUserMedia({ 
                     video: { 
                         width: 640, 
                         height: 480,
@@ -243,35 +227,8 @@
                     },
                     audio: true 
                 });
-
-                // Set up video
                 const videoElement = document.getElementById('videoFeed');
-                videoElement.srcObject = stream;
-                videoStream = stream;
-
-                // Set up audio recording
-                const audioTrack = stream.getAudioTracks()[0];
-                if (audioTrack) {
-                    const audioStream = new MediaStream([audioTrack]);
-                    mediaRecorder = new MediaRecorder(audioStream);
-                    
-                    mediaRecorder.ondataavailable = async (event) => {
-                        if (event.data.size > 0 && ws && ws.readyState === WebSocket.OPEN) {
-                            const reader = new FileReader();
-                            reader.onloadend = () => {
-                                ws.send(JSON.stringify({
-                                    type: 'audio',
-                                    audio: reader.result
-                                }));
-                            };
-                            reader.readAsDataURL(event.data);
-                        }
-                    };
-
-                    mediaRecorder.start(1000); // Capture audio in 1-second chunks
-                    document.getElementById('audioIndicator').classList.add('audio-active');
-                }
-
+                videoElement.srcObject = videoStream;
                 isStreaming = true;
                 log('Camera started');
                 sendVideoFrames();
@@ -285,15 +242,9 @@
             if (videoStream) {
                 videoStream.getTracks().forEach(track => track.stop());
                 document.getElementById('videoFeed').srcObject = null;
+                isStreaming = false;
+                log('Camera stopped');
             }
-            
-            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-                mediaRecorder.stop();
-                document.getElementById('audioIndicator').classList.remove('audio-active');
-            }
-
-            isStreaming = false;
-            log('Camera stopped');
         }
 
         function sendVideoFrames() {
