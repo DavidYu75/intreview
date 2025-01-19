@@ -142,6 +142,17 @@
   @apply bg-green-500 h-full rounded-full transition-all duration-300;
 }
 
+/* Add these new styles */
+.progress.sentiment-progress {
+  @apply bg-green-500 h-full rounded-full transition-all duration-300;
+  opacity: 0.4;  /* Lower opacity for neutral */
+}
+
+/* Make sentiment progress bar more opaque based on how positive the sentiment is */
+.progress.sentiment-progress[style*="width: 75"] { opacity: 1; }
+.progress.sentiment-progress[style*="width: 50"] { opacity: 0.8; }
+.progress.sentiment-progress[style*="width: 25"] { opacity: 0.6; }
+
 /* Key Moments */
 .key-moments-container {
   display: flex;

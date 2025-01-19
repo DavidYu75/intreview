@@ -21,7 +21,11 @@ interface InterviewResults {
   posture: number;     // Posture score (e.g., 85)
 }
 
-
+const getSentimentDescription = (score: number): string => {
+  if (score >= 90) return 'Very Positive';
+  if (score >= 75) return 'Positive';
+  return 'Neutral';  // Default state is now neutral
+};
 
 const getFillersScore = (fillerCount: number, durationMinutes: number) => {
   if (durationMinutes === 0) return 100; // Avoid division by zero
@@ -80,6 +84,52 @@ const formatDuration = (minutes: number) => {
     // Convert to seconds if less than 1 minute
     return `${Math.round(minutes * 60)} seconds`;
   }
+};
+
+// Add new helper functions for overall performance calculations
+const calculateSpeechScore = (results: InterviewResults): number => {
+  // Weight each speech metric
+  const weights = {
+    speechIntelligibility: 0.4,  // 40% weight
+    fillerWords: 0.3,           // 30% weight
+    speakingPace: 0.3           // 30% weight
+  };
+
+  // Calculate speaking pace score (closer to 150 wpm is better)
+  const idealWPM = 150;
+  const paceDeviation = Math.abs(results.words_per_minute - idealWPM);
+  const paceScore = Math.max(0, 100 - (paceDeviation / 2));
+
+  // Calculate filler words score
+  const fillerScore = getFillersScore(results.filler_word_count, results.duration_minutes);
+
+  // Combine scores with weights
+  const weightedScore = 
+    (results.speech_intelligibility * 100) * weights.speechIntelligibility +
+    fillerScore * weights.fillerWords +
+    paceScore * weights.speakingPace;
+
+  return Math.round(weightedScore);
+};
+
+const calculateVisualScore = (results: InterviewResults): number => {
+  // Calculate base score from eye contact and posture
+  const baseScore = (results.eye_contact + results.posture) / 2;
+
+  // Sentiment modifier:
+  // - Neutral (0-74): Treat as 100% (no penalty)
+  // - Positive (75-100): Maps to 100-110% bonus
+  let sentimentModifier = 1.0; // Default multiplier for neutral
+  if (results.sentiment >= 75) {
+    // Calculate bonus (0-10%) for positive sentiment
+    const bonus = (results.sentiment - 75) / 25; // Maps 75-100 to 0-1
+    sentimentModifier = 1 + (bonus * 0.1); // Maps 0-1 to 1.0-1.1 (0-10% bonus)
+  }
+
+  // Apply sentiment modifier and cap at 100%
+  const finalScore = Math.min(100, baseScore * sentimentModifier);
+  
+  return Math.round(finalScore);
 };
 
 const ResultsPage = () => {
@@ -202,18 +252,22 @@ const ResultsPage = () => {
             </div>
             <div className="performance-details">
               <div className="bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors">
-                <p className="metric-title">Technical Skills</p>
-                <p className="metric-value">90%</p>
-              <div className="bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors">
-                <p className="metric-title">Communication</p>
-                <p className="metric-value">82%</p>
+                <p className="metric-title">Speech Analysis</p>
+                <p className="metric-value">
+                  {results ? `${calculateSpeechScore(results)}%` : '0%'}
+                </p>
               </div>
               <div className="bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors">
-                <p className="metric-title">Body Language</p>
-                <p className="metric-value">83%</p>
+                <p className="metric-title">Visual Analysis</p>
+                <p className="metric-value">
+                  {results ? `${calculateVisualScore(results)}%` : '0%'}
+                </p>
+              </div>
+              <div className="bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors">
+                <p className="metric-title">Content</p>
+                <p className="metric-value">100%</p>
               </div>
             </div>
-          </div>
           </div>
         </section>
 
@@ -264,7 +318,7 @@ const ResultsPage = () => {
           <section className="visual-analysis section-card">
             <h2 className="section-title">Visual Analysis</h2>
             <div className="analysis-metrics">
-              {(['eye_contact', 'sentiment', 'posture'] as const).map((metric) => (
+              {(['eye_contact', 'posture'] as const).map((metric) => (
                 <div key={metric} className="analysis-item bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors">
                   <p className="metric-title">{metric.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}</p>
                   <div className="progress-bar">
@@ -276,6 +330,16 @@ const ResultsPage = () => {
                   <p className="metric-value">{results[metric]?.toFixed(1) || '0'}%</p>
                 </div>
               ))}
+              <div className="analysis-item bg-slate-50 p-2 rounded-lg hover:bg-slate-100 transition-colors">
+                <p className="metric-title">Sentiment</p>
+                <div className="progress-bar">
+                  <div 
+                    className="progress sentiment-progress"  // New class for sentiment-specific styling
+                    style={{ width: `${results.sentiment}%` }}
+                  ></div>
+                </div>
+                <p className="metric-value">{getSentimentDescription(results.sentiment)}</p>
+              </div>
             </div>
           </section>
 

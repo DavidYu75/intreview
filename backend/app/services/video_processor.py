@@ -174,15 +174,18 @@ class VideoProcessor:
                                 if m.get("attention_status") != "poor posture")
         posture_score = (good_posture_frames / total_frames) * 100 if total_frames > 0 else 0
 
-        # Calculate sentiment score
+        # New sentiment calculation
         positive_frames = sum(1 for m in self.frame_metrics 
                             if m.get("sentiment") == "positive")
-        sentiment_score = (positive_frames / total_frames) * 100 if total_frames > 0 else 0
+        sentiment_ratio = (positive_frames / total_frames) if total_frames > 0 else 0
+        
+        # Convert ratio to a descriptive score (0-100 scale)
+        sentiment_score = sentiment_ratio * 100
 
         summary = VideoAnalysisSummary(
             eye_contact_score=round(eye_contact, 1),
             posture_score=round(posture_score, 1),
-            sentiment_score=round(sentiment_score, 1),
+            sentiment_score=round(sentiment_score, 1),  # This will be used differently in frontend
             frame_count=total_frames
         )
         
